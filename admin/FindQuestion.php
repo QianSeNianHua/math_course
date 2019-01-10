@@ -49,18 +49,35 @@ class FindQuestion{
  
 	 //推送试题choose
 	 //$_POST["q_id"];试卷id
+	 //$_POST["q_state"];传送过来要改变的状态
 	 public function choose(){
 		$q_id=$_POST["q_id"];
 		$q_state=$_POST["q_state"];
-		if($_POST["q_state"]=="推送中")
-		{
-			$sql="UPDATE `math`.`question` SET `q_state` = '1' WHERE `question`.`q_id` = $q_id;";
-			$result=$this->conn->updateBySql($sql);
-		}else if($_POST["q_state"]=="推送"){
-			$sql="UPDATE `math`.`question` SET `q_state` = '0' WHERE `question`.`q_id` = $q_id;";
-			$result=$this->conn->updateBySql($sql);
-		}else{
-			echo "<script>alert('没有操作')</script>";
+		//$q_id=25;
+		//$q_state=1;
+		
+		$sqlnum="select count(*) as num from question where q_state=1 ";
+		$number=$this->conn->selectBySql($sqlnum);
+		var_dump($number['data'][0]['num']);
+		//查询是否存在推送中的状态
+		if($number['data'][0]['num']>0){
+			$sql="select *  from question where q_id=$q_id ";
+			$statenum=$this->conn->selectBySql($sql);
+			//var_dump($statenum['data'][0]);
+			if($statenum['data'][0]['q_state']==1&&$q_state==1){
+				$sql0="UPDATE `math`.`question` SET `q_state` = '0' WHERE `question`.`q_id` = $q_id;";
+				$result0=$this->conn->updateBySql($sql0);
+				echo json_encode(0, JSON_FORCE_OBJECT);
+			}else if($statenum['data'][0]['q_state']==0){
+				//存在其他试题正在推送中
+				echo json_encode(2, JSON_FORCE_OBJECT);
+			}
+		}else if($number['data'][0]['num']==0&&$q_state==1){
+			//把状态转换成1
+			$sql1="UPDATE `math`.`question` SET `q_state` = '1' WHERE `question`.`q_id` = $q_id;";
+			$result1=$this->conn->updateBySql($sql1);
+			//var_dump($result1);
+			echo json_encode(1, JSON_FORCE_OBJECT);
 		}
 	 }
 	 

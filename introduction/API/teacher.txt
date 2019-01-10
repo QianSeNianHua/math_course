@@ -23,7 +23,10 @@ url:       math_course/admin/FindQuestion.php
 参数：
            $_POST["q_id"] :试题id
            $_POST["q_state"] :推送状态(0或者1)
-返回值:(200, "查询成功", array('success'))或(404, "查询失败")
+返回值:
+	0为推送状态
+	1为推送中状态
+	2为存在其他试题推送中状态
 
 
 作用： 查看试题的画板
