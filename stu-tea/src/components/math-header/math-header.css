@@ -16,7 +16,7 @@ header>h1 {
     font-weight: bold;
     display: inline-block;
 }
-button {
+button.show {
     width: 115px;
     height: 49px;
     background-image: url(../../../static/image/fanhui.png);
@@ -27,4 +27,17 @@ button {
     position: absolute;
     left: 34px;
     top: 8px;
+}
+button.noShow {
+    width: 115px;
+    height: 49px;
+    background-image: url(../../../static/image/fanhui.png);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    left: 34px;
+    top: 8px;
+    opacity: 0.5;
 }

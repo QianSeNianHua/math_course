@@ -5,7 +5,7 @@ require_once(realpath(dirname(__FILE__) . '/../') . '/socket/Workerman/Autoloade
 class WebSocket {
 	private $ws_worker;
 	private $idArrs = array(-1);  // 存放身份
-	private $tdata = array('status' => false, 'q_id' => '');  // 存放消息
+	private $tdata = array('status' => false, 'qid' => 0);  // 存放消息
 
 	public function __construct() {
 		$this->ws_worker = new Worker("websocket://0.0.0.0:2000");
@@ -25,10 +25,9 @@ class WebSocket {
 	// 接收客户端的连接
 	private function conn() {
 		$this->ws_worker->onConnect = function($connection) {
-			//$connection->send('123');
 		};
     }
-    
+
     // 客户端断开连接时
     private function close() {
         $this->ws_worker->onClose = function($connection) {
@@ -51,7 +50,7 @@ class WebSocket {
 
 			if ($this->judgeID($data)) {
                 // 学生
-                
+
                 // 判断是否已存在
                 $num = 0;
                 for ($i = 0; $i < count($this->idArrs); $i++) {
@@ -62,7 +61,7 @@ class WebSocket {
                 if ($num == 0) {
                     array_push($this->idArrs, $connection->id);
                 }
-                
+
                 // 向自己发送消息
 				$connection->send(json_encode($this->tdata));
 			} else {
@@ -71,21 +70,27 @@ class WebSocket {
                     $this->idArrs[0] = $connection->id;
                 }
 
-                // 判断是否推送
-				if ($data->data->status) {
-                    // 推送中
-					$this->tdata['status'] = true;
-                    $this->tdata['q_id'] = $data->data->q_id;
+				// 如果data为空消息，则为教师证明身份；如果不为空，则教师发送消息
+				if (json_encode($data->data) === '{}') {
+					// 给自己发送消息
+					$connection->send(json_encode($this->tdata));
 				} else {
-					// 推送结束
-					$this->tdata['status'] = false;
-                    $this->tdata['q_id'] = '';
-				}
+					// 判断是否推送
+					if ($data->data->status) {
+						// 推送中
+						$this->tdata['status'] = true;
+						$this->tdata['qid'] = $data->data->qid;
+					} else {
+						// 推送结束
+						$this->tdata['status'] = false;
+						$this->tdata['qid'] = 0;
+					}
 
-                // 向学生们发送消息
-                for ($i = 1; $i < count($this->idArrs); $i++) {
-                    $connection->worker->connections[$this->idArrs[$i]]->send(json_encode($this->tdata));
-                }
+					// 向学生们发送消息
+					for ($i = 1; $i < count($this->idArrs); $i++) {
+						$connection->worker->connections[$this->idArrs[$i]]->send(json_encode($this->tdata));
+					}
+				}
 			}
 		};
 	}

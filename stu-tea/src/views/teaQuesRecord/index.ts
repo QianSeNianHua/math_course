@@ -12,7 +12,7 @@ import { Eapi } from '../../common/api'
         QuesList
     }
 })
-export default class QuesRecord extends Vue {
+export default class TeaQuesRecord extends Vue {
     private article: ArticleComp;
 
     data () {

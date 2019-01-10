@@ -1,10 +1,8 @@
-
-
 作用：  根据时间日期查找相对应的试题
 url:       math_course/admin/FindQuestion.php
 方法名: questiontime()
 参数：
-           $_POST["q_time"] : 时间(年月日2018-12-02)
+        $_POST["q_time"]: 时间(年月日2018-12-02)
 	'2018-12-02'
 返回值:json格式的相同日期的所有试题数据
 

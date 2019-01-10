@@ -1,6 +1,6 @@
 <template>
     <header>
-        <button v-if="isShowBtn" @click="retBtn">{{btnName}}</button>
+        <button class="show" v-if="isShowBtn" @click="retBtn">{{btnName}}</button>
         <h1>{{title}}</h1>
     </header>
 </template>
