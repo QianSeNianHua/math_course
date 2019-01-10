@@ -20,7 +20,6 @@ url:       math_course/admin/FindQuestion.php
 方法名: choose()
 参数：
            $_POST["q_id"] :试题id
-           $_POST["q_state"] :推送状态(0或者1)
 返回值:
 	0为推送状态
 	1为推送中状态

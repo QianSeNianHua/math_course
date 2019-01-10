@@ -1,5 +1,8 @@
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import { EIdentity, Socket } from '../../assets/js/socket'
+import ajax from '../../common/customAjax'
+import config from '../../common/config'
+import { Eapi } from '../../common/api'
 
 /**
  * 父组件向此组件传递参数：date[{year, month[{month, day[]}]}], list['id', 'content', 'state', 'time]
@@ -186,7 +189,25 @@ export default class QuesList extends Vue {
                 if (item['q_id'] === qid) {
                     // 请求结束推送
                     // console.log('发送ajax请求结束推送');
-                    this.socket.send(false, 0);
+                    let postUrl = 'http://' + config().host + ':' + config().post + '/' + config().project + '/' + config().api + '/' + Eapi.quesPushOfQid
+                    ajax(postUrl, { 'q_id': qid }).then(data => {
+                        if (parseInt(data + '', 10) === 0) {
+                            // 已改为推送结束状态
+                            item['q_state'] = 0;
+
+                            this.socket.send(false, 0);
+                        } else if (parseInt(data + '', 10) === 1) {
+                            // 已改为推送中状态
+                            item['q_state'] = 1;
+
+                            this.socket.send(false, 0);
+                        } else if (parseInt(data + '', 10) === 2) {
+                            // 已有其他试题处于推送中
+                            alert('有试题在推送中');
+                        }
+                    }).catch(() => {
+                        alert('网络连接失败');
+                    });
                 } else {
                     // 有试题在推送中，请结束推送
                     alert('有试题在推送中');
@@ -200,7 +221,31 @@ export default class QuesList extends Vue {
         if (!flag) {
             // 请求开始推送
             // console.log('发送ajax请求开始推送');
-            this.socket.send(true, parseInt(qid, 10));
+            let postUrl = 'http://' + config().host + ':' + config().post + '/' + config().project + '/' + config().api + '/' + Eapi.quesPushOfQid
+            ajax(postUrl, { 'q_id': qid }).then(data => {
+                for (let item of this.$props.list) {
+                    if (item['q_id'] === qid) {
+                        if (parseInt(data + '', 10) === 0) {
+                            // 已改为推送结束状态
+                            item['q_state'] = 0;
+
+                            this.socket.send(true, parseInt(qid, 10));
+                        } else if (parseInt(data + '', 10) === 1) {
+                            // 已改为推送中状态
+                            item['q_state'] = 1;
+
+                            this.socket.send(true, parseInt(qid, 10));
+                        } else if (parseInt(data + '', 10) === 2) {
+                            // 已有其他试题处于推送中
+                            alert('有试题在推送中');
+                        }
+
+                        break;
+                    }
+                }
+            }).catch(() => {
+                alert('网络连接失败');
+            });
         }
     }
 }

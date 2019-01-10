@@ -112,6 +112,7 @@ export default class TeaQuesRecord extends Vue {
             type: 'post',
             dataType: 'json',
             timeout: 10000,
+            data: {},
             success: (data: {code: number, message: string, data: [{'q_NO': string, 'q_board': string, 'q_content': string, 'q_id': string, 'q_other': string, 'q_state': string, 'q_time': string | string[]}]}) => {
                 for (let item of data['data']) {
                     let reg = /(\d+)-(\d+)-(\d+)/;
