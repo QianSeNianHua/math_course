@@ -3,16 +3,26 @@ import { Component, Watch } from 'vue-property-decorator'
 import MathHeader from '@/components/math-header/math-header.vue'
 import ArticleComp from '../../assets/js/articleComp'
 import MyCanvas from '../../assets/js/canvas/myCanvas'
+import { Socket, EIdentity } from '../../assets/js/socket'
 import $ from 'jquery'
+import config from '../../common/config'
+import { Eapi } from '../../common/api'
+import ajax from '../../common/customAjax'
 
 @Component({
     components: {
         MathHeader
     }
 })
-export default class Paint extends Vue {
+export default class StuPaint extends Vue {
     private article: ArticleComp;
     private canvas: MyCanvas;
+    private socket: Socket;
+
+    constructor () {
+        super();
+        this.socket = new Socket(EIdentity.student);
+    }
 
     data () {
         return {
@@ -128,12 +138,59 @@ export default class Paint extends Vue {
         this.canvas.clickListen();
     }
 
+    // 接收socket发送的消息
+    messageQid (): void {
+        let that = this;
+
+        this.socket.message((data: string) => {
+            let tempData: { status: boolean, qid: number } = JSON.parse(data);
+
+            that.pushControl(tempData.status, tempData.qid).then(qid => {
+                // 发送ajax获取试题数据
+                that.getQues(qid);
+            }).catch(() => {});
+        });
+    }
+
+    // 如果为推送中，则控制界面，如果为推送结束，则不控制界面
+    pushControl (status: boolean, qid: number): Promise<number> {
+        if (!status) {
+            // 推送结束
+            // 为返回按钮添加show类名
+            $('header>button').attr('class', '').addClass('show');
+
+            return Promise.reject();
+        } else {
+            // 推送中
+            // 为返回按钮添加noShow类名
+            $('header>button').attr('class', '').addClass('noShow');
+
+            return Promise.resolve(qid);
+        }
+    }
+
+    // ajax获取试题数据
+    getQues (qid: number) {
+        let postURL = 'http://' + config().host + ':' + config().post + '/' + config().project + '/' + config().api + '/' + Eapi.quesInfoOfQid
+        let that = this;
+
+        ajax(postURL, { 'q_id': qid }).then(data => {
+            if ((data['data'] as []).length !== 0) {
+                let tempData = data['data'][0];
+                $('article.questPanel>div').text(tempData['q_content']);
+            }
+        }).catch((mess) => {
+            // 连接失败
+        });
+    }
+
     mounted () {
+        this.messageQid();  // 接收socket发送的消息
         this.setArticle();  // 设置article高度
         this.getArtHeig();  // 获取article高度
         this.structure();  // 设置结构
         this.infoMaskVetical();  // 设置inforMask的宽度和高度
-        this.setPaintAttr();  // // 设置画板的宽度和高度
+        this.setPaintAttr(); // 设置画板的宽度和高度
         this.winChange();
         this.paint();
     }

@@ -57,12 +57,12 @@ export default class StuIndex extends Vue {
 
     // 跳转到画板页面
     goPaint (): void {
-        this.$router.push({ name: 'Paint' });
+        this.$router.push({ name: 'StuPaint' });
     }
 
     // 跳转到查看记录页面
     goImgRecord (): void {
-        this.$router.push({ name: 'ImgRecord' });
+        this.$router.push({ name: 'SImgRecord' });
     }
 
     mounted () {

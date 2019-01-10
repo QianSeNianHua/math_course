@@ -25,7 +25,9 @@
                         </ul>
                     </div>
                 </article>
-                <article class="questPanel"></article>
+                <article class="questPanel">
+                    <div></div>
+                </article>
                 <article class="canvasPanel">
                     <canvas id="myCanvas"></canvas>
                 </article>

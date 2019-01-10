@@ -62,12 +62,12 @@ export default class TeaIndex extends Vue {
 
     // 跳转到画板页面
     goPaint (): void {
-        this.$router.push({ name: 'TPaint' });
+        this.$router.push({ name: 'TeaPaint' });
     }
 
     // 跳转到试题列表页面
     TQuesRecord (): void {
-        this.$router.push({ name: 'TQuesRecord' });
+        this.$router.push({ name: 'TeaQuesRecord' });
     }
 
     // 跳转到查看记录页面
