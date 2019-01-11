@@ -11,11 +11,11 @@ import TeaQuesRecord from '../views/teaQuesRecord/index.vue'
 Vue.use(Router)
 
 export default new Router({
-    mode: 'history',
+    mode: 'hash',
     routes: [
         {
             name: 'StuIndex',
-            path: '/StuIndex',
+            path: '/',
             component: StuIndex,
             meta: false
         },

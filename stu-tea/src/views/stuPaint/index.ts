@@ -170,7 +170,7 @@ export default class StuPaint extends Vue {
     }
 
     // ajax获取试题数据
-    getQues (qid: number) {
+    getQues (qid: number): void {
         let postURL = 'http://' + config().host + ':' + config().post + '/' + config().project + '/' + config().api + '/' + Eapi.quesInfoOfQid
         let that = this;
 
@@ -192,6 +192,6 @@ export default class StuPaint extends Vue {
         this.infoMaskVetical();  // 设置inforMask的宽度和高度
         this.setPaintAttr(); // 设置画板的宽度和高度
         this.winChange();
-        this.paint();
+        this.paint();  // 画板
     }
 }

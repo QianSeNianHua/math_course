@@ -22,7 +22,7 @@ export default class ImgRecord extends Vue {
             },
             imgDisplay: {
                 liImgs: [
-                    '../../../static/image/beijing2.png', '../../../static/image/beijing.png', '../../../static/image/huaban.png'
+                    './static/image/beijing2.png', './static/image/beijing.png', './static/image/huaban.png'
                 ]
             },
             articleHeight: 0

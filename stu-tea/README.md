@@ -36,6 +36,9 @@ npm test
 npm 报错 chromedriver@2.41.0 install: `node install.js`
 解决：手动执行 npm install chromedriver --chromedriver_cdnurl=http://cdn.npm.taobao.org/dist/chromedriver
 
+# 编写过程中的注意问题
+1、引入static目录(与src目录同级)下的文件，需要'./static/xxx'。
+2、开发环境时路由页面下的mode:'history'可以去掉地址的 # ；但是在生产环境时，必须为mode:'hash'，否则编译后页面空白。
 
 # knowledge that update vue with webpack
 https://blog.csdn.net/qq_16559905/article/details/79404173

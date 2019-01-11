@@ -30,10 +30,15 @@ export class CanvasChoosed {
     canvasClick (e: Event): void {
         if (this.isMobild) {
             // 移动端
-            let event: TouchEvent = (e as CustomEvent).detail.gesture;  // 需要导入MUI框架
+            // let event: TouchEvent = (e as CustomEvent).detail.gesture;  // 需要导入MUI框架
 
-            this.x = event.changedTouches[0].clientX - this.myCanvasNode.getBoundingClientRect().left;
-            this.y = event.changedTouches[0].clientY - this.myCanvasNode.getBoundingClientRect().top;
+            // this.x = event.changedTouches[0].clientX - this.myCanvasNode.getBoundingClientRect().left;
+            // this.y = event.changedTouches[0].clientY - this.myCanvasNode.getBoundingClientRect().top;
+
+            let event: MouseEvent = (e as MouseEvent);
+
+            this.x = event.clientX - this.myCanvasNode.getBoundingClientRect().left;
+            this.y = event.clientY - this.myCanvasNode.getBoundingClientRect().top;
         } else {
             // PC端
             let event: MouseEvent = (e as MouseEvent);

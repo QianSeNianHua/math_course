@@ -102,7 +102,7 @@ export default class QuesList extends Vue {
     }
 
     // 根据日期查询试题列表
-    queryQuesOfDate (): [] {
+    queryQuesOfDate (): any[] {
         let tempArr = [];
 
         // tslint:disable-next-line:triple-equals

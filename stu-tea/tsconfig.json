@@ -25,7 +25,7 @@
         "sourceMap": true,
         "pretty": true,
         // 在表达式和声明上有隐含的any类型时报错
-        "noImplicitAny": true,
+        "noImplicitAny": false,
         // 移除注释
         "removeComments": true,
         "suppressImplicitAnyIndexErrors": true,

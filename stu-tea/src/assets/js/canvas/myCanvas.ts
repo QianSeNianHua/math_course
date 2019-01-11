@@ -20,11 +20,14 @@ import { MoveGraph } from './moveGraph';
 import { Intersect } from './intersect';
 import { Diameter } from './diameter';
 
+/**
+ * 数学课堂辅助工具————画板
+ */
 export default class MyCanvas {
     myCanvasNode: HTMLElement;  // canvas节点
     myCanvas: CanvasRenderingContext2D;  // canvas对象
-    canvasData: CanvasData;  // 存放canvas上的图形数据
-    rePaint: RePaint;  // 重绘图形
+    private canvasData: CanvasData;  // 存放canvas上的图形数据
+    private rePaint: RePaint;  // 重绘图形
     private intersect: Intersect;  // 相交
     private buttonListen: ButtonListen;  // 按钮监听事件
     private cvsClick: boolean;  // Canvas上的click事件，true表示执行click事件，false表示不执行click事件
@@ -34,22 +37,22 @@ export default class MyCanvas {
     private auxiliaryListen: AuxiliaryListen;  // 辅助工具的监听
     private moveGraph: MoveGraph;  // 移动图形
 
-    eventClick: string;  // 点击事件
-    eventStart: string;  // 开始点击事件
-    eventMove: string;  // 拖动事件
-    eventEnd: string;  // 结束点击事件
+    private eventClick: string;  // 点击事件
+    private eventStart: string;  // 开始点击事件
+    private eventMove: string;  // 拖动事件
+    private eventEnd: string;  // 结束点击事件
 
-    point: Point;  // 点的对象
-    segment: Segment;  // 线段的对象
-    circular: Circular;  // 圆的对象
-    fan: Fan;  // 扇形的对象
-    radius: Radius;  // 半径的对象
-    diameter: Diameter;  // 直径的对象
+    private point: Point;  // 点的对象
+    private segment: Segment;  // 线段的对象
+    private circular: Circular;  // 圆的对象
+    private fan: Fan;  // 扇形的对象
+    private radius: Radius;  // 半径的对象
+    private diameter: Diameter;  // 直径的对象
 
-    rule: Rule;  // 尺子
-    protractor: Protractor;  // 量角器
-    rotate: Rotate;  // 旋转
-    letterFlag: LetterFlag;  // 字母标志
+    private rule: Rule;  // 尺子
+    private protractor: Protractor;  // 量角器
+    private rotate: Rotate;  // 旋转
+    private letterFlag: LetterFlag;  // 字母标志
 
     constructor () {
         this.eventClick = this.isMobile() ? 'click' : 'click';
@@ -117,7 +120,35 @@ export default class MyCanvas {
         this.letterFlag = new LetterFlag(this.isMobile(), this.myCanvas, this.myCanvasNode, this.auxiliaryListen, this.canvasData);
     }
 
-    // 监听mousedown事件
+    /**
+     * 初始化画板数据
+     * @param data 图形数据，继承自Tools
+     */
+    initData (data: Tools[]): void {
+        for (let item of data) {
+            this.canvasData.setData(item);
+        }
+
+        // 清楚画布并重绘图形
+        this.rePaint.clearCanvas();
+        this.rePaint.rePaint();
+
+        // 遍历所有的交点
+        this.intersect.pointNoSelEach();
+        // 画相交的点
+        this.intersect.repaintPoint();
+    }
+
+    /**
+     * 获取画板数据
+     */
+    getData (): Tools[] {
+        return this.canvasData.getData() as Tools[];
+    }
+
+    /**
+     * 监听mousedown事件
+     */
     startListen (): void {
         let _self: MyCanvas = this;
         this.myCanvasNode.addEventListener(this.eventStart, function (e) {
@@ -177,7 +208,9 @@ export default class MyCanvas {
         }, false);
     }
 
-    // 监听mousemove事件
+    /**
+     * 监听mousemove事件
+     */
     moveListen (): void {
         let _self = this;
         this.myCanvasNode.addEventListener(this.eventMove, function (e) {
@@ -249,7 +282,9 @@ export default class MyCanvas {
         }, false);
     }
 
-    // 监听mouseend事件
+    /**
+     * 监听mouseend事件
+     */
     endListen (): void {
         let _self: MyCanvas = this;
         this.myCanvasNode.addEventListener(this.eventEnd, function (e) {
@@ -304,7 +339,9 @@ export default class MyCanvas {
         }, false);
     }
 
-    // 监听click事件
+    /**
+     * 监听click事件
+     */
     clickListen (): void {
         let _self: MyCanvas = this;
         this.myCanvasNode.addEventListener(this.eventClick, function (e) {
