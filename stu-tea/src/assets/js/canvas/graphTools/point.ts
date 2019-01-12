@@ -1,10 +1,10 @@
-import { ToolsName, Attribute } from './enum/enum-configlib';
-import { InterPoint } from './interface/inter-toolslib';
-import { RePaint } from './rePaint';
-import { CanvasData } from './canvasData';
-import { ButtonListen } from './buttonListen';
-import { Adsorption } from './adsorption';
-import { Intersect } from './intersect';
+import { ToolsName, Attribute } from '../enum/enum-configlib';
+import { InterPoint } from '../interface/inter-toolslib';
+import { RePaint } from '../rePaint';
+import { CanvasData } from '../canvasData';
+import { ButtonListen } from '../buttonListen';
+import { Adsorption } from '../adsorption';
+import { Intersect } from '../intersect';
 
 /**
  * 点
@@ -15,6 +15,7 @@ export class Point implements InterPoint {
     flag: ToolsName;  // 标志
     x: number;  // x的坐标
     y: number;  // y的坐标
+    lock: boolean;  // true表示后台录入的，false表示学生端绘画的(默认)
     isChoosed: boolean;  // true表示图形被选中，false表示未被选中
     lineWidth: number;  // 线宽
     private isMobild: boolean;  // true为移动端，false为PC端
@@ -172,6 +173,6 @@ export class Point implements InterPoint {
      * @returns InterPoint
      */
     data(): InterPoint {
-        return { flag: this.flag, isChoosed: this.isChoosed, x: this.x, y: this.y };
+        return { flag: this.flag, isChoosed: this.isChoosed, lock: false, x: this.x, y: this.y };
     }
 }

@@ -2,7 +2,6 @@ import { Attribute, ToolsName } from './enum/enum-configlib';
 import { InterAdsorp, Tools, InterCircular, InterFan, InterSegment, InterPoint, InterRadius } from './interface/inter-toolslib';
 import { CanvasData } from './canvasData';
 import { Intersect } from './intersect';
-import { CanvasChoosed } from './canvasChoosed';
 
 /**
  * 磁性吸附

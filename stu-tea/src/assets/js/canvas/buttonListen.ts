@@ -4,7 +4,7 @@ import { RePaint } from './rePaint';
 import { CanvasData } from './canvasData';
 import { CanvasChoosed } from './canvasChoosed';
 import { AuxiliaryListen } from './auxiliaryListen';
-import { TextBox } from './textBox';
+import { TextBox } from './graphTools/textBox';
 import { Intersect } from './intersect';
 
 /**
@@ -34,7 +34,7 @@ export class ButtonListen {
         this.buttonRadius();
         this.buttonDiameter();
         this.buttonChord();
-        // this.buttonTangent();
+        this.buttonTangent();
     }
 
     /**
@@ -59,9 +59,9 @@ export class ButtonListen {
             // 判断文本框输入值是否打开
             if (_self.textBox.getTextFlag()) return;
 
-            // 画扇形，半径，直径前必须选中圆形
+            // 画扇形，半径，直径，切线前必须选中圆形
             let index = _self.canvasChoosed.getIndex();
-            if (buttonFlag === ToolsName.fan || buttonFlag === ToolsName.radius || buttonFlag === ToolsName.diameter) {
+            if (buttonFlag === ToolsName.fan || buttonFlag === ToolsName.radius || buttonFlag === ToolsName.diameter || buttonFlag === ToolsName.tangent) {
                 if (index.length === 1) {
                     // 点，线段，圆
                     if ((_self.canvasData.getData(index[0]) as Tools).flag !== ToolsName.circular) {
@@ -164,7 +164,7 @@ export class ButtonListen {
     recoverButtonFlag (): void {
         this.buttonFlag = ToolsName.default;
 
-        let arr = [Attribute.btnPointID, Attribute.btnSegmentID, Attribute.btnCircularID, Attribute.btnFanID, Attribute.btnRadiusID, Attribute.btnDiameterID, Attribute.btnChordID /*Attribute.btnTangentID*/];
+        let arr = [Attribute.btnPointID, Attribute.btnSegmentID, Attribute.btnCircularID, Attribute.btnFanID, Attribute.btnRadiusID, Attribute.btnDiameterID, Attribute.btnChordID, Attribute.btnTangentID];
 
         arr.forEach(function (item: Attribute) {
             document.getElementById(item.toString()).className = 'nochoosed';

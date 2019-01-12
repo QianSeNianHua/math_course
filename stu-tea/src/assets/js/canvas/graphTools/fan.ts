@@ -1,10 +1,10 @@
-import { ToolsName, Color, Attribute } from './enum/enum-configlib';
-import { InterFan, Tools, InterCircular, InterChord } from './interface/inter-toolslib';
-import { RePaint } from './rePaint';
-import { ButtonListen } from './buttonListen';
-import { CanvasData } from './canvasData';
-import { CanvasChoosed } from './canvasChoosed';
-import { Intersect } from './intersect';
+import { ToolsName, Color, Attribute } from '../enum/enum-configlib';
+import { InterFan, Tools, InterCircular, InterChord } from '../interface/inter-toolslib';
+import { RePaint } from '../rePaint';
+import { ButtonListen } from '../buttonListen';
+import { CanvasData } from '../canvasData';
+import { CanvasChoosed } from '../canvasChoosed';
+import { Intersect } from '../intersect';
 
 /**
  * 画扇形过程
@@ -19,6 +19,7 @@ export class Fan implements InterFan {
     x: number;  // 起点x的坐标
     y: number;  // 起点y的坐标
     r: number;  // 半径
+    lock: boolean;  // true表示后台录入的，false表示学生端绘画的(默认)
     isChoosed: boolean;  // true表示图形被选中，false表示未被选中
     startAngle: number;  // 表示起始角，单位为弧度
     endAngle: number;  // 表示结束角，单位为弧度
@@ -61,7 +62,7 @@ export class Fan implements InterFan {
      */
     startCallBack(e: Event): void {
         if (!this.eventFlag && this.eventCount === 0) {
-            this.hasChord = { flag: ToolsName.chord, isChoosed: false, x: 0, y: 0, endX: 0, endY: 0, isShow: false };
+            this.hasChord = { flag: ToolsName.chord, isChoosed: false, lock: false, x: 0, y: 0, endX: 0, endY: 0, isShow: false };
 
             // 画半径1
             this.eventFlag = true;
@@ -553,6 +554,6 @@ export class Fan implements InterFan {
      * 返回坐标数据
      */
     data(): InterFan {
-        return { flag: this.flag, isChoosed: this.isChoosed, x: this.x, y: this.y, r: this.r, startAngle: this.startAngle, endAngle: this.endAngle, fillStyle: this.fillStyle, anticlockwise: this.anticlockwise, hasChord: this.hasChord };
+        return { flag: this.flag, isChoosed: this.isChoosed, lock: false, x: this.x, y: this.y, r: this.r, startAngle: this.startAngle, endAngle: this.endAngle, fillStyle: this.fillStyle, anticlockwise: this.anticlockwise, hasChord: this.hasChord };
     }
 }

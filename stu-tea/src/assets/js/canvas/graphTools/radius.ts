@@ -1,19 +1,23 @@
-import { InterDiameter, Tools, InterCircular } from './interface/inter-toolslib';
-import { ToolsName, Attribute } from './enum/enum-configlib';
-import { RePaint } from './rePaint';
-import { ButtonListen } from './buttonListen';
-import { CanvasData } from './canvasData';
-import { CanvasChoosed } from './canvasChoosed';
-import { Intersect } from './intersect';
+import { ToolsName, Attribute } from '../enum/enum-configlib';
+import { InterRadius, InterCircular, Tools } from '../interface/inter-toolslib';
+import { RePaint } from '../rePaint';
+import { ButtonListen } from '../buttonListen';
+import { CanvasData } from '../canvasData';
+import { CanvasChoosed } from '../canvasChoosed';
+import { Intersect } from '../intersect';
 
 /**
- * 画直径过程
+ * 画半径过程
+ * false, 0
+ * move(false, 0)
+ * start(true, 1) --> move(true, 1) --> end(false, 0)
  */
-export class Diameter implements InterDiameter {
+export class Radius implements InterRadius {
     flag: ToolsName;  // 标志
     x: number;  // 起点x的坐标
     y: number;  // 起点y的坐标
     r: number;  // 半径
+    lock: boolean;  // true表示后台录入的，false表示学生端绘画的(默认)
     isChoosed: boolean;  // true表示图形被选中，false表示未被选中
     angle: number;  // 表示角，单位为弧度
     anticlockwise?: boolean;  // false表示顺时针(默认)，true表示逆时针
@@ -30,7 +34,7 @@ export class Diameter implements InterDiameter {
     private intersect: Intersect;  // 相交
 
     constructor(isMobild: boolean, myCanvas: CanvasRenderingContext2D, myCanvasNode: HTMLElement, rePaint: RePaint, buttonListen: ButtonListen, canvasData: CanvasData, canvasChoosed: CanvasChoosed, intersect: Intersect) {
-        this.flag = ToolsName.diameter;
+        this.flag = ToolsName.radius;
         this.isMobild = isMobild;
         this.myCanvas = myCanvas;
         this.myCanvasNode = myCanvasNode;
@@ -52,7 +56,7 @@ export class Diameter implements InterDiameter {
      */
     startCallBack(e: Event): void {
         if (!this.eventFlag && this.eventCount === 0) {
-            // 画直径
+            // 画半径
             this.eventFlag = true;
             this.eventCount = 1;
 
@@ -91,8 +95,6 @@ export class Diameter implements InterDiameter {
             this.myCanvas.lineWidth = Attribute.propWitdh;
             this.myCanvas.moveTo(this.x, this.y);
             this.myCanvas.arc(this.x, this.y, this.r, this.angle, this.angle, this.anticlockwise);
-            this.myCanvas.moveTo(this.x, this.y);
-            this.myCanvas.arc(this.x, this.y, this.r, (this.angle + Math.PI), (this.angle + Math.PI), this.anticlockwise);
             this.myCanvas.closePath();
             this.myCanvas.stroke();
         }
@@ -104,7 +106,7 @@ export class Diameter implements InterDiameter {
      */
     moveCallBack(e: Event): void {
         if (!this.eventFlag && this.eventCount === 0) {
-            // 画直径
+            // 画半径
 
             let x = 0, y = 0;
             if (this.isMobild) {
@@ -141,8 +143,6 @@ export class Diameter implements InterDiameter {
             this.myCanvas.lineWidth = Attribute.propWitdh;
             this.myCanvas.moveTo(this.x, this.y);
             this.myCanvas.arc(this.x, this.y, this.r, angle, angle, this.anticlockwise);
-            this.myCanvas.moveTo(this.x, this.y);
-            this.myCanvas.arc(this.x, this.y, this.r, (angle + Math.PI), (angle + Math.PI), this.anticlockwise);
             this.myCanvas.closePath();
             this.myCanvas.stroke();
         } else if (this.eventFlag && this.eventCount === 1) {
@@ -183,8 +183,6 @@ export class Diameter implements InterDiameter {
             this.myCanvas.lineWidth = Attribute.propWitdh;
             this.myCanvas.moveTo(this.x, this.y);
             this.myCanvas.arc(this.x, this.y, this.r, angle, angle, this.anticlockwise);
-            this.myCanvas.moveTo(this.x, this.y);
-            this.myCanvas.arc(this.x, this.y, this.r, (angle + Math.PI), (angle + Math.PI), this.anticlockwise);
             this.myCanvas.closePath();
             this.myCanvas.stroke();
         }
@@ -235,8 +233,6 @@ export class Diameter implements InterDiameter {
             this.myCanvas.lineWidth = Attribute.propWitdh;
             this.myCanvas.moveTo(this.x, this.y);
             this.myCanvas.arc(this.x, this.y, this.r, this.angle, this.angle, this.anticlockwise);
-            this.myCanvas.moveTo(this.x, this.y);
-            this.myCanvas.arc(this.x, this.y, this.r, (this.angle + Math.PI), (this.angle + Math.PI), this.anticlockwise);
             this.myCanvas.closePath();
             this.myCanvas.stroke();
 
@@ -253,7 +249,7 @@ export class Diameter implements InterDiameter {
     /**
      * 返回坐标数据
      */
-    data(): InterDiameter {
-        return { flag: this.flag, isChoosed: this.isChoosed, x: this.x, y: this.y, r: this.r, angle: this.angle, anticlockwise: this.anticlockwise };
+    data(): InterRadius {
+        return { flag: this.flag, isChoosed: this.isChoosed, lock: false, x: this.x, y: this.y, r: this.r, angle: this.angle, anticlockwise: this.anticlockwise };
     }
 }

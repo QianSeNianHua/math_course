@@ -1,9 +1,9 @@
-import { Attribute } from './enum/enum-configlib';
-import { AuxiliaryListen } from './auxiliaryListen';
-import { RePaint } from './rePaint';
-import { Adsorption } from './adsorption';
-import { CanvasData } from './canvasData';
-import { Intersect } from './intersect';
+import { Attribute } from '../enum/enum-configlib';
+import { AuxiliaryListen } from '../auxiliaryListen';
+import { RePaint } from '../rePaint';
+import { Adsorption } from '../adsorption';
+import { CanvasData } from '../canvasData';
+import { Intersect } from '../intersect';
 
 /**
  * 尺子

@@ -1,10 +1,10 @@
-import { InterPoint, Tools, InterCircular, InterSegment, InterFan } from './interface/inter-toolslib';
-import { RePaint } from './rePaint';
-import { CanvasChoosed } from './canvasChoosed';
-import { CanvasData } from './canvasData';
-import { ToolsName } from './enum/enum-configlib';
-import { Intersect } from './intersect';
-import { Adsorption } from './adsorption';
+import { InterPoint, Tools, InterCircular, InterSegment, InterFan, InterTangent } from '../interface/inter-toolslib';
+import { RePaint } from '../rePaint';
+import { CanvasChoosed } from '../canvasChoosed';
+import { CanvasData } from '../canvasData';
+import { ToolsName } from '../enum/enum-configlib';
+import { Intersect } from '../intersect';
+import { Adsorption } from '../adsorption';
 
 /**
  * 移动图形
@@ -221,17 +221,26 @@ export class MoveGraph {
         data.y = dataXY.y;
 
         for (let args of data.fanAndRadius) {
-            // 扇形或半径或直径
-            args.x = data.x;
-            args.y = data.y;
+            // 扇形或半径或直径或弦或切线
+            if (args.flag === ToolsName.fan || args.flag === ToolsName.radius || args.flag === ToolsName.diameter) {
+                args.x = data.x;
+                args.y = data.y;
+            }
 
-            // 弦
             if (args.flag === ToolsName.fan) {
+                // 弦
                 let temps = args as InterFan;
                 temps.hasChord.x = Math.cos(temps.startAngle) * temps.r + temps.x;
                 temps.hasChord.y = Math.sin(temps.startAngle) * temps.r + temps.y;
                 temps.hasChord.endX = Math.cos(temps.endAngle) * temps.r + temps.x;
                 temps.hasChord.endY = Math.sin(temps.endAngle) * temps.r + temps.y;
+            } else if (args.flag === ToolsName.tangent) {
+                // 切线
+                let temps = args as InterTangent;
+                temps.x += x - this.x;
+                temps.y += y - this.y;
+                temps.insePointX += x - this.x;
+                temps.insePointY += y - this.y;
             }
         }
 

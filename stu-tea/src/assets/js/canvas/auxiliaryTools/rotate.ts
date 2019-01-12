@@ -1,10 +1,10 @@
-import { Attribute, ToolsName } from './enum/enum-configlib';
-import { Tools, InterCircular, InterFan, InterRadius, InterSegment, InterDiameter } from './interface/inter-toolslib';
-import { AuxiliaryListen } from './auxiliaryListen';
-import { RePaint } from './rePaint';
-import { CanvasData } from './canvasData';
-import { CanvasChoosed } from './canvasChoosed';
-import { Intersect } from './intersect';
+import { Attribute, ToolsName } from '../enum/enum-configlib';
+import { Tools, InterCircular, InterFan, InterRadius, InterSegment, InterDiameter } from '../interface/inter-toolslib';
+import { AuxiliaryListen } from '../auxiliaryListen';
+import { RePaint } from '../rePaint';
+import { CanvasData } from '../canvasData';
+import { CanvasChoosed } from '../canvasChoosed';
+import { Intersect } from '../intersect';
 
 /**
  * 旋转

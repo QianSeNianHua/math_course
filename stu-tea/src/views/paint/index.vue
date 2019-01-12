@@ -25,9 +25,7 @@
                         </ul>
                     </div>
                 </article>
-                <article class="questPanel">
-                    <div></div>
-                </article>
+                <article class="questPanel"></article>
                 <article class="canvasPanel">
                     <canvas id="myCanvas"></canvas>
                 </article>
@@ -44,7 +42,7 @@
                                     <li><button id="radius" class="nochoosed">半徑</button></li>
                                     <li><button id="diameter" class="nochoosed">直徑</button></li>
                                     <li><button id="chord" class="nochoosed">弦</button></li>
-                                    <li><button id="tangent" class="nochoosed">切线</button></li>
+                                    <!-- <li><button id="tangent" class="nochoosed">切线</button></li> -->
                                 </ul>
                             </div>
                             <input type="text" id="value" placeholder="请输入"/>

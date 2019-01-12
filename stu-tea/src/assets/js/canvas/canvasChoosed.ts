@@ -1,5 +1,5 @@
 import { ToolsName, Attribute } from './enum/enum-configlib';
-import { Tools, InterPoint, InterSegment, InterCircular, InterRadius, InterFan, InterLetterFlag, InterChord } from './interface/inter-toolslib';
+import { Tools, InterPoint, InterSegment, InterCircular, InterRadius, InterFan, InterLetterFlag, InterChord, InterTangent } from './interface/inter-toolslib';
 import { CanvasData } from './canvasData';
 
 /**
@@ -90,9 +90,8 @@ export class CanvasChoosed {
                             if (this.cirFan(v2)) {
                                 tempArr.push(j);
 
-                                        // 判断弦是否被选中
+                                // 判断弦是否被选中
                                 if (this.cirChord((v2 as InterFan).hasChord)) {
-                                    console.log(123);
                                     tempArr.push(-1);
                                 } else {
                                     (v2 as InterFan).hasChord.isChoosed = false;
@@ -124,7 +123,7 @@ export class CanvasChoosed {
                 } else {
                     v.isChoosed = false;
 
-                        // 遍历扇形和半径和直径
+                    // 遍历扇形和半径和直径和切线
                     for (let j = (v as InterCircular).fanAndRadius.length - 1; j >= 0; j--) {
                         let v2 = (v as InterCircular).fanAndRadius[j];
                         switch (v2.flag) {
@@ -147,13 +146,18 @@ export class CanvasChoosed {
                                 v2.isChoosed = false;
                             }
                             break;
+                        case ToolsName.tangent:
+                            if (!this.cirTangent(v2)) {
+                                v2.isChoosed = false;
+                            } else {
+                                choosedIndex.push([i, j]);
+                            }
+                            break;
                         default:
                             break;
                         }
                     }
                 }
-                break;
-            case ToolsName.tangent:
                 break;
             case ToolsName.letterFlag:
                 if (this.cirLetterFlag(v)) {
@@ -201,7 +205,7 @@ export class CanvasChoosed {
                     return;
                 }
             } else if (v.length > 1) {
-                // 扇形、半径、直径、弦
+                // 扇形、半径、直径、弦、切线
                 for (let j = 0; j < v.length; j++) {
                     let v2 = v[j];
 
@@ -214,14 +218,23 @@ export class CanvasChoosed {
                             (data[this.index[0]] as InterCircular).fanAndRadius[this.index[1]].isChoosed = true;
 
                             return;
+                        } else {
+                            // 判断下一个是不是切线
+                            if ((data[v2] as InterCircular).fanAndRadius[choosedIndex[i][j + 1]].flag === ToolsName.tangent) {
+                                this.index.push(v2);
+                                this.index.push(choosedIndex[i][j + 1]);
+                                (data[this.index[0]] as InterCircular).fanAndRadius[this.index[1]].isChoosed = true;
+
+                                return;
+                            }
                         }
                     } else {
-                        // 判断当前为弦，还是为扇形或半径或直径
+                        // 判断当前为弦，还是为扇形或半径或直径或切线
                         if (v2 === -1) {
                             if (((data[v[0]] as InterCircular).fanAndRadius[v[j - 1]] as InterFan).hasChord.isChoosed) {
                                 if (j !== v.length - 1) {
                                     // 第二层里不是最后一个，获取圆里的下一个
-                                    // 下一个为扇形或半径
+                                    // 下一个为扇形或半径或直径或切线
                                     ((data[v[0]] as InterCircular).fanAndRadius[v[j - 1]] as InterFan).hasChord.isChoosed = false;
                                     this.index.push(v[0]);
                                     this.index.push(choosedIndex[i][j + 1]);
@@ -248,7 +261,7 @@ export class CanvasChoosed {
                                 }
                             }
                         } else if ((data[v[0]] as InterCircular).fanAndRadius[v2].isChoosed) {
-                            // 被选中图形不是圆，而是圆里的扇形或半径或弦
+                            // 被选中图形不是圆，而是圆里的扇形或半径或直径或弦或切线
                             if (j !== v.length - 1) {
                                 // 第二层里不是最后一个，获取圆里的下一个
                                 // 如果当前为扇形，则判断下一个是否为弦(值为-1表示当前扇形里的弦，没有就表示无弦)，还是为半径或扇形
@@ -259,14 +272,14 @@ export class CanvasChoosed {
                                     this.index.push(choosedIndex[i][j + 1]);  // 存放弦的索引
                                     ((data[this.index[0]] as InterCircular).fanAndRadius[this.index[1]] as InterFan).hasChord.isChoosed = true;
                                 } else {
-                                    this.index.push(choosedIndex[i][j + 1]);  // 存放下一个图形的索引(扇形或半径)
+                                    this.index.push(choosedIndex[i][j + 1]);  // 存放下一个图形的索引(扇形或半径或直径或切线)
                                     (data[this.index[0]] as InterCircular).fanAndRadius[this.index[1]].isChoosed = true;
                                 }
 
                                 return;
                             } else {
                                 // 第二层里最后一个
-                                // 最后一个可能为扇形、半径、弦
+                                // 最后一个可能为扇形、半径、直径、弦、切线
                                 if (i !== choosedIndex.length - 1) {
                                     // 第一层里不是最后一个，则获取下一个
                                     (data[v[0]] as InterCircular).fanAndRadius[v2].isChoosed = false;
@@ -322,7 +335,7 @@ export class CanvasChoosed {
             // 清除点、线段、圆
             (this.canvasData.getData(this.index[0]) as Tools).isChoosed = false;
         } else if (this.index.length === 2) {
-            // 清除扇形、半径、直径
+            // 清除扇形、半径、直径、切线
             (this.canvasData.getData(this.index[0]) as InterCircular).fanAndRadius[this.index[1]].isChoosed = false;
         } else if (this.index.length === 3) {
             // 清除弦
@@ -484,6 +497,31 @@ export class CanvasChoosed {
         let or = Math.cos(Math.abs(angle - pangle)) * pr;
 
         if (dist <= Attribute.adsorpChoosed && or >= -Attribute.adsorpChoosed && or <= (r + Attribute.adsorpChoosed)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 计算切线
+     * @param tool 
+     */
+    private cirTangent (tool: Tools): boolean {
+        let data = tool as InterTangent;
+
+        // 设线段起点为O(data.x, data.y)，鼠标点位置为P(this.x, this.y)，P点到线段OB的最短距离投影到线段上的点为Q
+        // pr表示P到线段起点的距离
+        // pangle表示pr绕x坐标顺时针旋转的角度
+        // dist表示P到线段的最短距离，投影到线段上标记为Q点
+        // or表示线段起点到Q点的距离
+        let pr = Math.sqrt(Math.pow((this.x - data.x), 2) + Math.pow((this.y - data.y), 2));
+        let pangle = Math.atan2((this.y - data.y), (this.x - data.x));
+        pangle = (pangle >= 0) ? pangle : (2 * Math.PI + pangle);
+        let dist = Math.abs(Math.sin(Math.abs(data.angle - pangle)) * pr);
+        let or = Math.cos(Math.abs(data.angle - pangle)) * pr;
+
+        if (dist <= Attribute.adsorpChoosed && or >= -Attribute.adsorpChoosed && or <= (data.r + Attribute.adsorpChoosed)) {
             return true;
         } else {
             return false;

@@ -1,22 +1,28 @@
-import { ToolsName, Attribute } from './enum/enum-configlib';
-import { InterSegment, Tools } from './interface/inter-toolslib';
-import { RePaint } from './rePaint';
-import { ButtonListen } from './buttonListen';
-import { CanvasData } from './canvasData';
-import { Adsorption } from './adsorption';
-import { Intersect } from './intersect';
+import { ToolsName, Color, Attribute } from '../enum/enum-configlib';
+import { InterCircular, Tools } from '../interface/inter-toolslib';
+import { RePaint } from '../rePaint';
+import { ButtonListen } from '../buttonListen';
+import { CanvasData } from '../canvasData';
+import { Adsorption } from '../adsorption';
+import { Intersect } from '../intersect';
 
 /**
- * 线段
+ * 画圆的过程
+ * false, 0
+ * start(true, 1) --> move(true, 1) --> end(false, 2)
+ * move(false, 2)
+ * start(true, 2) --> move(true, 2) --> end(false, 0)
  */
-export class Segment implements InterSegment {
+export class Circular implements InterCircular {
     flag: ToolsName;  // 标志
     x: number;  // 起点x的坐标
     y: number;  // 起点y的坐标
-    r: number;  // 线段长度
+    r: number;  // 半径
+    lock: boolean;  // true表示后台录入的，false表示学生端绘画的(默认)
     isChoosed: boolean;  // true表示图形被选中，false表示未被选中
-    angle: number;  // 表示角，单位为弧度
     anticlockwise?: boolean;  // false表示顺时针(默认)，true表示逆时针
+    fillStyle: string;  // 填充的颜色
+    fanAndRadius: Tools[];  // 存放依赖于圆的扇形和半径
 
     private isMobild: boolean;  // true为移动端，false为PC端
     private myCanvas: CanvasRenderingContext2D;  // canvas对象
@@ -27,10 +33,10 @@ export class Segment implements InterSegment {
     private buttonListen: ButtonListen;  // 按钮监听事件
     private canvasData: CanvasData;  // canvas图形数据
     private adsorption: Adsorption;  // 磁性吸附
-    private intersect: Intersect;  // 相交的点
+    private intersect: Intersect;  // 相交
 
-    constructor(isMobild: boolean, myCanvas: CanvasRenderingContext2D, myCanvasNode: HTMLElement, rePaint: RePaint, buttonListen: ButtonListen, canvasData: CanvasData, intersect: Intersect) {
-        this.flag = ToolsName.segment;
+    constructor (isMobild: boolean, myCanvas: CanvasRenderingContext2D, myCanvasNode: HTMLElement, rePaint: RePaint, buttonListen: ButtonListen, canvasData: CanvasData, intersect: Intersect) {
+        this.flag = ToolsName.circular;
         this.isMobild = isMobild;
         this.myCanvas = myCanvas;
         this.myCanvasNode = myCanvasNode;
@@ -41,21 +47,25 @@ export class Segment implements InterSegment {
         this.rePaint = rePaint;
         this.buttonListen = buttonListen;
         this.isChoosed = false;
+        this.fanAndRadius = [];
+        this.fillStyle = Color.default;
         this.intersect = intersect;
         this.adsorption = new Adsorption(this.canvasData, this.intersect);
     }
 
-    /*
-    * 监听mousedown事件
-    * 第一次点击确定起点，第二次点击确定线段
-    * @param: e 事件
-    */
-    startCallBack(e: Event): void {
+    /**
+     * 监听mousedown事件
+     * @param: e Event事件
+     * @returns void
+     */
+    startCallBack (e: Event): void {
         if (!this.eventFlag && this.eventCount === 0) {
-            // 画点，为了确定点
+            // 画圆点
             this.eventFlag = true;
             this.eventCount = 1;
+            this.fanAndRadius = [];
 
+            // tslint:disable-next-line:one-variable-per-declaration
             let x = 0, y = 0;
             if (this.isMobild) {
                 // 移动端
@@ -86,9 +96,10 @@ export class Segment implements InterSegment {
             this.myCanvas.arc(x, y, Attribute.propPointR, 0, 2 * Math.PI, false);
             this.myCanvas.fill();
         } else if (!this.eventFlag && this.eventCount === 2) {
-            // 画终点，画线段
+            // 画圆，画半径
             this.eventFlag = true;
 
+            // tslint:disable-next-line:one-variable-per-declaration
             let x = 0, y = 0;
             if (this.isMobild) {
                 // 移动端
@@ -106,11 +117,10 @@ export class Segment implements InterSegment {
 
             x += Attribute.mouseOffset;
 
-            // 清楚画布并重绘图形
+            // 清除画布和重绘
             this.rePaint.clearCanvas();
             this.rePaint.rePaint();
 
-            // 磁性吸附
             let dataXY = this.adsorption.adsorpToXY(x, y);
             x = dataXY.x;
             y = dataXY.y;
@@ -121,57 +131,53 @@ export class Segment implements InterSegment {
                 value = 0.1;
                 r = 4;
             }
-            let angle = Math.atan2((y - this.y), (x - this.x));
-            angle = (angle >= 0) ? angle : (2 * Math.PI + angle);
-            angle = Math.round((180 / Math.PI) * angle) * (Math.PI / 180);
+            let startAngle = Math.atan2((y - this.y), (x - this.x));
+            startAngle = (startAngle >= 0) ? startAngle : (2 * Math.PI + startAngle);
+            startAngle = Math.round((180 / Math.PI) * startAngle) * (Math.PI / 180);
 
             // 画相交的点
             this.intersect.repaintPoint();
 
-            // 画线段
+            // 画圆心
+            this.myCanvas.beginPath();
+            this.myCanvas.fillStyle = Attribute.propDFStyle;
+            this.myCanvas.arc(this.x, this.y, Attribute.propPointR, 0, 2 * Math.PI, false);
+            this.myCanvas.fill();
+            // 画半径
             this.myCanvas.beginPath();
             this.myCanvas.lineWidth = Attribute.propWitdh;
             this.myCanvas.strokeStyle = Attribute.propNSStyle;
             this.myCanvas.moveTo(this.x, this.y);
-            this.myCanvas.arc(this.x, this.y, r, angle, angle, this.anticlockwise);
-            this.myCanvas.closePath();
+            this.myCanvas.arc(this.x, this.y, r, startAngle, startAngle, false);
             this.myCanvas.stroke();
-
-            // 画起点
+            // 画圆
             this.myCanvas.beginPath();
-            this.myCanvas.fillStyle = Attribute.propNFStyle;
-            this.myCanvas.arc(this.x, this.y, Attribute.propPointR, 0, 2 * Math.PI, false);
-            this.myCanvas.fill();
-
-            // 画终点
-            this.myCanvas.beginPath();
-            this.myCanvas.fillStyle = Attribute.propNFStyle;
-            this.myCanvas.arc(x, y, Attribute.propPointR, 0, 2 * Math.PI, false);
-            this.myCanvas.fill();
+            this.myCanvas.strokeStyle = Attribute.propNSStyle;
+            this.myCanvas.lineWidth = Attribute.propWitdh;
+            this.myCanvas.arc(this.x, this.y, r, 0, 2 * Math.PI, false);
+            this.myCanvas.stroke();
 
             // 画尺子
             this.myCanvas.beginPath();
             this.myCanvas.strokeStyle = Attribute.propDSStyle;
             this.myCanvas.lineWidth = 2;
             this.myCanvas.moveTo(this.x, this.y);
-            let rulep = this.rotatexy(this.x, this.y, 0, 20, angle);
+            let rulep = this.rotatexy(this.x, this.y, 0, 20, startAngle);
             this.myCanvas.lineTo(rulep.x, rulep.y);
-            rulep = this.rotatexy(this.x, this.y, r, 20, angle);
+            rulep = this.rotatexy(this.x, this.y, r, 20, startAngle);
             this.myCanvas.lineTo(rulep.x, rulep.y);
-            rulep = this.rotatexy(this.x, this.y, r, 0, angle);
+            rulep = this.rotatexy(this.x, this.y, r, 0, startAngle);
             this.myCanvas.lineTo(rulep.x, rulep.y);
-            this.myCanvas.strokeStyle = Attribute.propDSStyle;
-            this.myCanvas.lineWidth = 2;
             for (let i = 10; i < r; i += 10) {
-                rulep = this.rotatexy(this.x, this.y, i, 0, angle);
+                rulep = this.rotatexy(this.x, this.y, i, 0, startAngle);
                 this.myCanvas.moveTo(rulep.x, rulep.y);
-                rulep = this.rotatexy(this.x, this.y, i, 5, angle);
+                rulep = this.rotatexy(this.x, this.y, i, 5, startAngle);
                 this.myCanvas.lineTo(rulep.x, rulep.y);
                 i += 10;
                 if (i < r) {
-                    rulep = this.rotatexy(this.x, this.y, i, 0, angle);
+                    rulep = this.rotatexy(this.x, this.y, i, 0, startAngle);
                     this.myCanvas.moveTo(rulep.x, rulep.y);
-                    rulep = this.rotatexy(this.x, this.y, i, 10, angle);
+                    rulep = this.rotatexy(this.x, this.y, i, 10, startAngle);
                     this.myCanvas.lineTo(rulep.x, rulep.y);
                 }
             }
@@ -181,9 +187,9 @@ export class Segment implements InterSegment {
             this.myCanvas.save();
             this.myCanvas.beginPath();
             this.myCanvas.translate(this.x, this.y);
-            this.myCanvas.rotate(angle);
-            this.myCanvas.font = Attribute.propFont;
-            this.myCanvas.fillStyle = Attribute.propDFStyle;
+            this.myCanvas.rotate(startAngle);
+            this.myCanvas.font = 'bold 22px Arial';
+            this.myCanvas.fillStyle = 'black';
             this.myCanvas.fillText(value + 'cm', r / 2 - 22, -30);
             this.myCanvas.restore();
         } else {
@@ -191,13 +197,14 @@ export class Segment implements InterSegment {
         }
     }
 
-    /*
-    * 监听mousemove事件
-    * @param: e 事件
-    */
-    moveCallBack(e: Event): void {
+    /**
+     * 监听mousemove事件
+     * @param: e 事件
+     * @returns void
+     */
+    moveCallBack (e: Event): void {
         if (this.eventFlag && this.eventCount === 1) {
-            // 画点，为了确定点
+            // 画圆点
 
             let x = 0, y = 0;
             if (this.isMobild) {
@@ -216,11 +223,10 @@ export class Segment implements InterSegment {
 
             x += Attribute.mouseOffset;
 
-            // 清楚画布并重绘图形
+            // 清除画布和重绘
             this.rePaint.clearCanvas();
             this.rePaint.rePaint();
 
-            // 磁性吸附
             let dataXY = this.adsorption.adsorpToXY(x, y);
             x = dataXY.x;
             y = dataXY.y;
@@ -233,7 +239,7 @@ export class Segment implements InterSegment {
             this.myCanvas.arc(x, y, Attribute.propPointR, 0, 2 * Math.PI, false);
             this.myCanvas.fill();
         } else if (!this.eventFlag && this.eventCount === 2) {
-            // 画线段，为了确定线段
+            // 画半径和圆
 
             let x = 0, y = 0;
             if (this.isMobild) {
@@ -252,11 +258,10 @@ export class Segment implements InterSegment {
 
             x += Attribute.mouseOffset;
 
-            // 清楚画布并重绘图形
+            // 清除画布和重绘
             this.rePaint.clearCanvas();
             this.rePaint.rePaint();
 
-            // 磁性吸附
             let dataXY = this.adsorption.adsorpToXY(x, y);
             x = dataXY.x;
             y = dataXY.y;
@@ -267,58 +272,52 @@ export class Segment implements InterSegment {
                 value = 0.1;
                 r = 4;
             }
-            let angle = Math.atan2((y - this.y), (x - this.x));
-            angle = (angle >= 0) ? angle : (2 * Math.PI + angle);
-            angle = Math.round((180 / Math.PI) * angle) * (Math.PI / 180);
+            let startAngle = Math.atan2((y - this.y), (x - this.x));
+            startAngle = (startAngle >= 0) ? startAngle : (2 * Math.PI + startAngle);
+            startAngle = Math.round((180 / Math.PI) * startAngle) * (Math.PI / 180);
 
             // 画相交的点
             this.intersect.repaintPoint();
 
-            // 画线段
-            this.myCanvas.beginPath();
-            this.myCanvas.lineWidth = Attribute.propWitdh;
-            this.myCanvas.strokeStyle = Attribute.propNSStyle;
-            this.myCanvas.moveTo(this.x, this.y);
-            this.myCanvas.arc(this.x, this.y, r, angle, angle, this.anticlockwise);
-            this.myCanvas.stroke();
-
-            // 画起点
+            // 画圆心
             this.myCanvas.beginPath();
             this.myCanvas.fillStyle = Attribute.propNFStyle;
             this.myCanvas.arc(this.x, this.y, Attribute.propPointR, 0, 2 * Math.PI, false);
             this.myCanvas.fill();
-
-            // 画终点
-            x = Math.cos(angle) * r + this.x;
-            y = Math.sin(angle) * r + this.y;
+            // 画半径
             this.myCanvas.beginPath();
-            this.myCanvas.fillStyle = Attribute.propNFStyle;
-            this.myCanvas.arc(x, y, Attribute.propPointR, 0, 2 * Math.PI, false);
-            this.myCanvas.fill();
+            this.myCanvas.lineWidth = Attribute.propWitdh;
+            this.myCanvas.strokeStyle = Attribute.propNSStyle;
+            this.myCanvas.moveTo(this.x, this.y);
+            this.myCanvas.arc(this.x, this.y, r, startAngle, startAngle, false);
+            this.myCanvas.stroke();
+            // 画圆
+            this.myCanvas.beginPath();
+            this.myCanvas.strokeStyle = Attribute.propNSStyle;
+            this.myCanvas.arc(this.x, this.y, r, startAngle, (2 * Math.PI + startAngle), false);
+            this.myCanvas.stroke();
 
             // 画尺子
             this.myCanvas.beginPath();
             this.myCanvas.strokeStyle = Attribute.propDSStyle;
             this.myCanvas.lineWidth = 2;
             this.myCanvas.moveTo(this.x, this.y);
-            let rulep = this.rotatexy(this.x, this.y, 0, 20, angle);
+            let rulep = this.rotatexy(this.x, this.y, 0, 20, startAngle);
             this.myCanvas.lineTo(rulep.x, rulep.y);
-            rulep = this.rotatexy(this.x, this.y, r, 20, angle);
+            rulep = this.rotatexy(this.x, this.y, r, 20, startAngle);
             this.myCanvas.lineTo(rulep.x, rulep.y);
-            rulep = this.rotatexy(this.x, this.y, r, 0, angle);
+            rulep = this.rotatexy(this.x, this.y, r, 0, startAngle);
             this.myCanvas.lineTo(rulep.x, rulep.y);
-            this.myCanvas.strokeStyle = Attribute.propDSStyle;
-            this.myCanvas.lineWidth = 2;
             for (let i = 10; i < r; i += 10) {
-                rulep = this.rotatexy(this.x, this.y, i, 0, angle);
+                rulep = this.rotatexy(this.x, this.y, i, 0, startAngle);
                 this.myCanvas.moveTo(rulep.x, rulep.y);
-                rulep = this.rotatexy(this.x, this.y, i, 5, angle);
+                rulep = this.rotatexy(this.x, this.y, i, 5, startAngle);
                 this.myCanvas.lineTo(rulep.x, rulep.y);
                 i += 10;
                 if (i < r) {
-                    rulep = this.rotatexy(this.x, this.y, i, 0, angle);
+                    rulep = this.rotatexy(this.x, this.y, i, 0, startAngle);
                     this.myCanvas.moveTo(rulep.x, rulep.y);
-                    rulep = this.rotatexy(this.x, this.y, i, 10, angle);
+                    rulep = this.rotatexy(this.x, this.y, i, 10, startAngle);
                     this.myCanvas.lineTo(rulep.x, rulep.y);
                 }
             }
@@ -328,13 +327,14 @@ export class Segment implements InterSegment {
             this.myCanvas.save();
             this.myCanvas.beginPath();
             this.myCanvas.translate(this.x, this.y);
-            this.myCanvas.rotate(angle);
-            this.myCanvas.font = Attribute.propFont;
-            this.myCanvas.fillStyle = Attribute.propDFStyle;
+            this.myCanvas.rotate(startAngle);
+            this.myCanvas.font = 'bold 22px Arial';
+            this.myCanvas.fillStyle = 'black';
             this.myCanvas.fillText(value + 'cm', r / 2 - 22, -30);
             this.myCanvas.restore();
         } else if (this.eventFlag && this.eventCount === 2) {
-            // 画终点，画线段
+            // 画圆，画半径
+
             let x = 0, y = 0;
             if (this.isMobild) {
                 // 移动端
@@ -352,74 +352,67 @@ export class Segment implements InterSegment {
 
             x += Attribute.mouseOffset;
 
-            // 清楚画布并重绘图形
+            // 清除画布和重绘
             this.rePaint.clearCanvas();
             this.rePaint.rePaint();
 
-            // 磁性吸附
             let dataXY = this.adsorption.adsorpToXY(x, y);
             x = dataXY.x;
             y = dataXY.y;
 
             let value = parseFloat((Math.sqrt(Math.pow(Math.abs(x - this.x), 2) + Math.pow(Math.abs(y - this.y), 2)) / Attribute.unitProp).toFixed(1));
             let r = Math.round(value * Attribute.unitProp);
-            if (r <= Attribute.unitProp * 0.1) {
+            if (r <= 4) {
                 value = 0.1;
-                r = Attribute.unitProp * 0.1;
+                r = 4;
             }
-            let angle = Math.atan2((y - this.y), (x - this.x));
-            angle = (angle >= 0) ? angle : (2 * Math.PI + angle);
-            angle = Math.round((180 / Math.PI) * angle) * (Math.PI / 180);
+            let startAngle = Math.atan2((y - this.y), (x - this.x));
+            startAngle = (startAngle >= 0) ? startAngle : (2 * Math.PI + startAngle);
+            startAngle = Math.round((180 / Math.PI) * startAngle) * (Math.PI / 180);
 
             // 画相交的点
             this.intersect.repaintPoint();
 
-            // 画线段
-            this.myCanvas.beginPath();
-            this.myCanvas.lineWidth = Attribute.propWitdh;
-            this.myCanvas.strokeStyle = Attribute.propNSStyle;
-            this.myCanvas.moveTo(this.x, this.y);
-            this.myCanvas.arc(this.x, this.y, r, angle, angle, this.anticlockwise);
-            this.myCanvas.closePath();
-            this.myCanvas.stroke();
-
-            // 画起点
+            // 画圆心
             this.myCanvas.beginPath();
             this.myCanvas.fillStyle = Attribute.propNFStyle;
             this.myCanvas.arc(this.x, this.y, Attribute.propPointR, 0, 2 * Math.PI, false);
             this.myCanvas.fill();
-
-            // 画终点
-            x = Math.cos(angle) * r + this.x;
-            y = Math.sin(angle) * r + this.y;
+            // 画半径
             this.myCanvas.beginPath();
-            this.myCanvas.fillStyle = Attribute.propNFStyle;
-            this.myCanvas.arc(x, y, Attribute.propPointR, 0, 2 * Math.PI, false);
-            this.myCanvas.fill();
+            this.myCanvas.lineWidth = Attribute.propWitdh;
+            this.myCanvas.strokeStyle = Attribute.propNSStyle;
+            this.myCanvas.moveTo(this.x, this.y);
+            this.myCanvas.arc(this.x, this.y, r, startAngle, startAngle, false);
+            this.myCanvas.stroke();
+            // 画圆
+            this.myCanvas.beginPath();
+            this.myCanvas.strokeStyle = Attribute.propNSStyle;
+            this.myCanvas.lineWidth = Attribute.propWitdh;
+            this.myCanvas.arc(this.x, this.y, r, 0, 2 * Math.PI, false);
+            this.myCanvas.stroke();
 
             // 画尺子
             this.myCanvas.beginPath();
             this.myCanvas.strokeStyle = Attribute.propDSStyle;
             this.myCanvas.lineWidth = 2;
             this.myCanvas.moveTo(this.x, this.y);
-            let rulep = this.rotatexy(this.x, this.y, 0, 20, angle);
+            let rulep = this.rotatexy(this.x, this.y, 0, 20, startAngle);
             this.myCanvas.lineTo(rulep.x, rulep.y);
-            rulep = this.rotatexy(this.x, this.y, r, 20, angle);
+            rulep = this.rotatexy(this.x, this.y, r, 20, startAngle);
             this.myCanvas.lineTo(rulep.x, rulep.y);
-            rulep = this.rotatexy(this.x, this.y, r, 0, angle);
+            rulep = this.rotatexy(this.x, this.y, r, 0, startAngle);
             this.myCanvas.lineTo(rulep.x, rulep.y);
-            this.myCanvas.strokeStyle = Attribute.propDSStyle;
-            this.myCanvas.lineWidth = 2;
             for (let i = 10; i < r; i += 10) {
-                rulep = this.rotatexy(this.x, this.y, i, 0, angle);
+                rulep = this.rotatexy(this.x, this.y, i, 0, startAngle);
                 this.myCanvas.moveTo(rulep.x, rulep.y);
-                rulep = this.rotatexy(this.x, this.y, i, 5, angle);
+                rulep = this.rotatexy(this.x, this.y, i, 5, startAngle);
                 this.myCanvas.lineTo(rulep.x, rulep.y);
                 i += 10;
                 if (i < r) {
-                    rulep = this.rotatexy(this.x, this.y, i, 0, angle);
+                    rulep = this.rotatexy(this.x, this.y, i, 0, startAngle);
                     this.myCanvas.moveTo(rulep.x, rulep.y);
-                    rulep = this.rotatexy(this.x, this.y, i, 10, angle);
+                    rulep = this.rotatexy(this.x, this.y, i, 10, startAngle);
                     this.myCanvas.lineTo(rulep.x, rulep.y);
                 }
             }
@@ -429,9 +422,9 @@ export class Segment implements InterSegment {
             this.myCanvas.save();
             this.myCanvas.beginPath();
             this.myCanvas.translate(this.x, this.y);
-            this.myCanvas.rotate(angle);
-            this.myCanvas.font = Attribute.propFont;
-            this.myCanvas.fillStyle = Attribute.propDFStyle;
+            this.myCanvas.rotate(startAngle);
+            this.myCanvas.font = 'bold 22px Arial';
+            this.myCanvas.fillStyle = 'black';
             this.myCanvas.fillText(value + 'cm', r / 2 - 22, -30);
             this.myCanvas.restore();
         } else {
@@ -439,13 +432,14 @@ export class Segment implements InterSegment {
         }
     }
 
-    /*
-    * 监听mouseup事件
-    * @param: e 事件
-    */
-    endCallBack(e: Event): void {
+    /**
+     * 监听mouseup事件
+     * @param: e 事件
+     * @returns void
+     */
+    endCallBack (e: Event): void {
         if (this.eventFlag && this.eventCount === 1) {
-            // 画点，但不保存，确定了点
+            // 确定圆点
             this.eventFlag = false;
             this.eventCount = 2;
 
@@ -465,11 +459,10 @@ export class Segment implements InterSegment {
 
             this.x += Attribute.mouseOffset;
 
-            // 清楚画布并重绘图形
+            // 清除画布和重绘
             this.rePaint.clearCanvas();
             this.rePaint.rePaint();
 
-            // 磁性吸附
             let dataXY = this.adsorption.adsorpToXY(this.x, this.y);
             this.x = dataXY.x;
             this.y = dataXY.y;
@@ -482,7 +475,7 @@ export class Segment implements InterSegment {
             this.myCanvas.arc(this.x, this.y, Attribute.propPointR, 0, 2 * Math.PI, false);
             this.myCanvas.fill();
         } else if (this.eventFlag && this.eventCount === 2) {
-            // 确定线段，保存数据
+            // 确定圆，保存数据
             this.eventFlag = false;
             this.eventCount = 0;
 
@@ -503,11 +496,10 @@ export class Segment implements InterSegment {
 
             x += Attribute.mouseOffset;
 
-            // 清楚画布并重绘图形
+            // 清除画布和重绘
             this.rePaint.clearCanvas();
             this.rePaint.rePaint();
 
-            // 磁性吸附
             let dataXY = this.adsorption.adsorpToXY(x, y);
             x = dataXY.x;
             y = dataXY.y;
@@ -518,37 +510,26 @@ export class Segment implements InterSegment {
                 value = 0.1;
                 this.r = 4;
             }
-            let angle = Math.atan2((y - this.y), (x - this.x));
-            angle = (angle >= 0) ? angle : (2 * Math.PI + angle);
-            this.angle = Math.round((180 / Math.PI) * angle) * (Math.PI / 180);
+            let startAngle = Math.atan2((y - this.y), (x - this.x));
+            startAngle = (startAngle >= 0) ? startAngle : (2 * Math.PI + startAngle);
+            startAngle = Math.round((180 / Math.PI) * startAngle) * (Math.PI / 180);
 
             // 相交的点
             this.intersect.pointEach(this.data(), this.canvasData);
             // 画相交的点
             this.intersect.repaintPoint();
 
-            // 画线段
-            this.myCanvas.beginPath();
-            this.myCanvas.lineWidth = Attribute.propWitdh;
-            this.myCanvas.strokeStyle = Attribute.propDSStyle;
-            this.myCanvas.moveTo(this.x, this.y);
-            this.myCanvas.arc(this.x, this.y, this.r, this.angle, this.angle, this.anticlockwise);
-            this.myCanvas.closePath();
-            this.myCanvas.stroke();
-
-            // 画起点
+            // 画圆心
             this.myCanvas.beginPath();
             this.myCanvas.fillStyle = Attribute.propDFStyle;
             this.myCanvas.arc(this.x, this.y, Attribute.propPointR, 0, 2 * Math.PI, false);
             this.myCanvas.fill();
-
-            // 画终点
-            x = Math.cos(this.angle) * this.r + this.x;
-            y = Math.sin(this.angle) * this.r + this.y;
+            // 画圆
             this.myCanvas.beginPath();
-            this.myCanvas.fillStyle = Attribute.propDFStyle;
-            this.myCanvas.arc(x, y, Attribute.propPointR, 0, 2 * Math.PI, false);
-            this.myCanvas.fill();
+            this.myCanvas.strokeStyle = Attribute.propDSStyle;
+            this.myCanvas.lineWidth = Attribute.propWitdh;
+            this.myCanvas.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false);
+            this.myCanvas.stroke();
 
             // 保存数据
             this.canvasData.setData(this.data());
@@ -561,9 +542,10 @@ export class Segment implements InterSegment {
 
     /**
      * 返回坐标数据
+     * @returns InterCircular
      */
-    data(): InterSegment {
-        return { flag: this.flag, isChoosed: this.isChoosed, x: this.x, y: this.y, r: this.r, angle: this.angle, anticlockwise: this.anticlockwise };
+    data (): InterCircular {
+        return { flag: this.flag, isChoosed: this.isChoosed, lock: false, x: this.x, y: this.y, r: this.r, anticlockwise: this.anticlockwise, fillStyle: this.fillStyle, fanAndRadius: this.fanAndRadius };
     }
 
     /**
@@ -574,7 +556,7 @@ export class Segment implements InterSegment {
      * @param py 所求点的y坐标，同上，x坐标向上为正，向下为负
      * @param angle 角度，顺时针
      */
-    private rotatexy(ox: number, oy: number, px: number, py: number, angle: number): {x: number, y: number} {
+    private rotatexy (ox: number, oy: number, px: number, py: number, angle: number): {x: number, y: number} {
         let x = px * Math.cos(angle) + py * Math.sin(angle) + ox;
         let y = px * Math.sin(angle) - py * Math.cos(angle) + oy;
         return { x, y };

@@ -1,10 +1,10 @@
-import { ToolsName, Color, Auxiliary, Attribute } from './enum/enum-configlib';
-import { Tools, InterCircular, InterFan } from './interface/inter-toolslib';
-import { CanvasChoosed } from './canvasChoosed';
-import { CanvasData } from './canvasData';
-import { RePaint } from './rePaint';
-import { AuxiliaryListen } from './auxiliaryListen';
-import { ButtonListen } from './buttonListen';
+import { ToolsName, Color, Auxiliary, Attribute } from '../enum/enum-configlib';
+import { Tools, InterCircular, InterFan } from '../interface/inter-toolslib';
+import { CanvasChoosed } from '../canvasChoosed';
+import { CanvasData } from '../canvasData';
+import { RePaint } from '../rePaint';
+import { AuxiliaryListen } from '../auxiliaryListen';
+import { ButtonListen } from '../buttonListen';
 
 /**
  * 填充背景色

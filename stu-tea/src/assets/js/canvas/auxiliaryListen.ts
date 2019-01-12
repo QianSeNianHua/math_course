@@ -4,7 +4,7 @@ import { CanvasChoosed } from './canvasChoosed';
 import { CanvasData } from './canvasData';
 import { RePaint } from './rePaint';
 import { ButtonListen } from './buttonListen';
-import { TextBox } from './textBox';
+import { TextBox } from './graphTools/textBox';
 import { Intersect } from './intersect';
 
 /**

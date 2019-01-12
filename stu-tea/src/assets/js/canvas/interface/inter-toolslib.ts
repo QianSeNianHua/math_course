@@ -5,7 +5,8 @@ import { ToolsName } from '../enum/enum-configlib';
  * @param flag 标志
  * @param x x的坐标
  * @param y y的坐标
- * @param isChoosed true表示图形被选中，false表示未被选中
+ * @param isChoosed true表示图形被选中，false表示未被选中(默认)
+ * @param local 由后台录入的图形，则为true；学生端绘的图形，则为false
  */
 // tslint:disable-next-line:interface-name
 export interface Tools {
@@ -13,6 +14,7 @@ export interface Tools {
     x: number;
     y: number;
     isChoosed: boolean;
+    lock: boolean;
 }
 
 /**
@@ -100,8 +102,19 @@ export interface InterChord extends Tools {
 
 /**
  * 表示切线
+ * @param r 表示切线长度
+ * @param angle 表示切线角度
+ * @param insePointX 表示切线与圆相交的x坐标
+ * @param insePointY 表示相交的y坐标
+ * @param anticlockwise false表示顺时针(默认)，true表示逆时针
  */
-export interface InterTangent extends Tools { }
+export interface InterTangent extends Tools {
+    r: number;
+    angle: number;
+    insePointX: number;
+    insePointY: number;
+    anticlockwise?: boolean;
+}
 
 /**
  * 表示字母标志

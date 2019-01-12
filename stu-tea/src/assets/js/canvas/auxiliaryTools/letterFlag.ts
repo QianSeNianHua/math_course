@@ -1,7 +1,7 @@
-import { ToolsName, Attribute } from './enum/enum-configlib';
-import { InterLetterFlag } from './interface/inter-toolslib';
-import { AuxiliaryListen } from './auxiliaryListen';
-import { CanvasData } from './canvasData';
+import { ToolsName, Attribute } from '../enum/enum-configlib';
+import { InterLetterFlag } from '../interface/inter-toolslib';
+import { AuxiliaryListen } from '../auxiliaryListen';
+import { CanvasData } from '../canvasData';
 
 /**
  * 字母标志
@@ -12,6 +12,7 @@ export class LetterFlag implements InterLetterFlag {
     text: string;  // 标志的内容
     flag: ToolsName;  // 标志
     isChoosed: boolean;  // 是否被选中，true表示被选中，false表示未被选中
+    lock: boolean;  // true表示后台录入的，false表示学生端绘画的(默认)
     private eventFlag: boolean;  // true表示开始点击，false表示结束点击
     private eventCount: number;  // 点击次数
     private isMobild: boolean;  // true为移动端，false为PC端
@@ -148,6 +149,6 @@ export class LetterFlag implements InterLetterFlag {
      * 返回坐标数据
      */
     data(): InterLetterFlag {
-        return { flag: this.flag, isChoosed: this.isChoosed, x: this.x, y: this.y, text: this.text };
+        return { flag: this.flag, isChoosed: this.isChoosed, lock: false, x: this.x, y: this.y, text: this.text };
     }
 }

@@ -1,24 +1,25 @@
 import { ToolsName, Auxiliary, Attribute } from './enum/enum-configlib';
 import { Tools, InterCircular } from './interface/inter-toolslib';
-import { Point } from './point';
+import { Point } from './graphTools/point';
 import { CanvasData } from './canvasData';
 import { RePaint } from './rePaint';
 import { ButtonListen } from './buttonListen';
-import { Segment } from './segment';
-import { Circular } from './circular';
+import { Segment } from './graphTools/segment';
+import { Circular } from './graphTools/circular';
 import { CanvasChoosed } from './canvasChoosed';
-import { Fan } from './fan';
-import { Radius } from './radius';
-import { TextBox } from './textBox';
-import { FillColor } from './fillColor';
+import { Fan } from './graphTools/fan';
+import { Radius } from './graphTools/radius';
+import { Diameter } from './graphTools/diameter';
+import { Tangent } from './graphTools/tangent';
+import { TextBox } from './graphTools/textBox';
+import { FillColor } from './auxiliaryTools/fillColor';
 import { AuxiliaryListen } from './auxiliaryListen';
-import { Rule } from './rule';
-import { Protractor } from './protractor';
-import { Rotate } from './rotate';
-import { LetterFlag } from './letterFlag';
-import { MoveGraph } from './moveGraph';
+import { Rule } from './auxiliaryTools/rule';
+import { Protractor } from './auxiliaryTools/protractor';
+import { Rotate } from './auxiliaryTools/rotate';
+import { LetterFlag } from './auxiliaryTools/letterFlag';
+import { MoveGraph } from './auxiliaryTools/moveGraph';
 import { Intersect } from './intersect';
-import { Diameter } from './diameter';
 
 /**
  * 数学课堂辅助工具————画板
@@ -48,6 +49,7 @@ export default class MyCanvas {
     private fan: Fan;  // 扇形的对象
     private radius: Radius;  // 半径的对象
     private diameter: Diameter;  // 直径的对象
+    private tangent: Tangent;  // 切线的对象
 
     private rule: Rule;  // 尺子
     private protractor: Protractor;  // 量角器
@@ -110,6 +112,7 @@ export default class MyCanvas {
         this.fan = new Fan(this.isMobile(), this.myCanvas, this.myCanvasNode, this.rePaint, this.buttonListen, this.canvasData, this.canvasChoosed, this.intersect);
         this.radius = new Radius(this.isMobile(), this.myCanvas, this.myCanvasNode, this.rePaint, this.buttonListen, this.canvasData, this.canvasChoosed, this.intersect);
         this.diameter = new Diameter(this.isMobile(), this.myCanvas, this.myCanvasNode, this.rePaint, this.buttonListen, this.canvasData, this.canvasChoosed, this.intersect);
+        this.tangent = new Tangent(this.isMobile(), this.myCanvas, this.myCanvasNode, this.rePaint, this.buttonListen, this.canvasData, this.canvasChoosed, this.intersect);
     }
 
     // 辅助工具对象
@@ -175,7 +178,9 @@ export default class MyCanvas {
             case ToolsName.diameter:
                 _self.diameter.startCallBack(e);
                 return;
-            case ToolsName.tangent: return;
+            case ToolsName.tangent:
+                _self.tangent.startCallBack(e);
+                return;
             case ToolsName.default:
                 _self.cvsClick = true;
                 break;
@@ -235,7 +240,9 @@ export default class MyCanvas {
             case ToolsName.diameter:
                 _self.diameter.moveCallBack(e);
                 break;
-            case ToolsName.tangent: break;
+            case ToolsName.tangent:
+                _self.tangent.moveCallBack(e);
+                break;
             case ToolsName.default: break;
             default: return;
             }
@@ -309,7 +316,9 @@ export default class MyCanvas {
             case ToolsName.diameter:
                 _self.diameter.endCallBack(e);
                 return;
-            case ToolsName.tangent: return;
+            case ToolsName.tangent:
+                _self.tangent.endCallBack(e);
+                return;
             case ToolsName.default: break;
             default: return;
             }

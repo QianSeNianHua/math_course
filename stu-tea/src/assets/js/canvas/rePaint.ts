@@ -1,5 +1,5 @@
 import { ToolsName, Attribute } from './enum/enum-configlib';
-import { Tools, InterPoint, InterSegment, InterFan, InterCircular, InterRadius, InterLetterFlag, InterChord, InterDiameter } from './interface/inter-toolslib';
+import { Tools, InterPoint, InterSegment, InterFan, InterCircular, InterRadius, InterLetterFlag, InterChord, InterDiameter, InterTangent } from './interface/inter-toolslib';
 
 /**
  * 重绘图形
@@ -211,9 +211,29 @@ export class RePaint {
 
     /**
      * 画切线
+     * @param: x 表示起点的x坐标
+     * @param: y 表示起点的y坐标
+     * @param: r 表示线段长度
+     * @param: angle 表示角，单位为弧度
+     * @param: anticlockwise false表示顺时针(默认)，true表示逆时针
      */
-    private paintTangent() {
-
+    private paintTangent(data: InterTangent) {
+        this.myCanvas.beginPath();
+        if (data.isChoosed) {
+            this.myCanvas.strokeStyle = Attribute.propisChoosed;
+            this.myCanvas.fillStyle = Attribute.propisChoosed;
+        } else {
+            this.myCanvas.strokeStyle = Attribute.propDSStyle;
+            this.myCanvas.fillStyle = Attribute.propDFStyle;
+        }
+        this.myCanvas.lineWidth = Attribute.propWitdh;
+        this.myCanvas.moveTo(data.x, data.y);
+        this.myCanvas.arc(data.x, data.y, data.r, data.angle, data.angle, data.anticlockwise);
+        this.myCanvas.stroke();
+        this.myCanvas.beginPath();
+        this.myCanvas.moveTo(data.insePointX, data.insePointY);
+        this.myCanvas.arc(data.insePointX, data.insePointY, Attribute.propPointR, 0, 2 * Math.PI, false);
+        this.myCanvas.fill();
     }
 
     /**
@@ -263,12 +283,12 @@ export class RePaint {
                     case ToolsName.diameter:
                         this.paintDiameter((value2 as InterDiameter));
                         break;
+                    case ToolsName.tangent:
+                        this.paintTangent(value2 as InterTangent);
+                        break;
                     default: break;
                     }
                 }
-                break;
-            case ToolsName.tangent:
-                this.paintTangent();
                 break;
             case ToolsName.letterFlag:
                 this.paintLetterFlag(value as InterLetterFlag);
