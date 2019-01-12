@@ -106,6 +106,9 @@ export interface InterChord extends Tools {
  * @param angle 表示切线角度
  * @param insePointX 表示切线与圆相交的x坐标
  * @param insePointY 表示相交的y坐标
+ * @param cirX 表示依赖的圆的⚪💗的x坐标
+ * @param cirY 表示依赖的圆的⚪💗的y坐标
+ * @param cirR 表示依赖的圆的半径
  * @param anticlockwise false表示顺时针(默认)，true表示逆时针
  */
 export interface InterTangent extends Tools {
@@ -113,6 +116,9 @@ export interface InterTangent extends Tools {
     angle: number;
     insePointX: number;
     insePointY: number;
+    cirX: number;
+    cirY: number;
+    cirR: number;
     anticlockwise?: boolean;
 }
 

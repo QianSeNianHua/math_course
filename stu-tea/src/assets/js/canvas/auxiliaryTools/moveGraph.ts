@@ -237,10 +237,13 @@ export class MoveGraph {
             } else if (args.flag === ToolsName.tangent) {
                 // 切线
                 let temps = args as InterTangent;
-                temps.x += x - this.x;
-                temps.y += y - this.y;
-                temps.insePointX += x - this.x;
-                temps.insePointY += y - this.y;
+                temps.x += data.x - temps.cirX;
+                temps.y += data.y - temps.cirY;
+                temps.insePointX += data.x - temps.cirX;
+                temps.insePointY += data.y - temps.cirY;
+                temps.cirX = data.x;
+                temps.cirY = data.y;
+                temps.cirR = data.r;
             }
         }
 

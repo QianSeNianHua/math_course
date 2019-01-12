@@ -218,6 +218,9 @@ export class RePaint {
      * @param: anticlockwise false表示顺时针(默认)，true表示逆时针
      */
     private paintTangent(data: InterTangent) {
+        let bx = Math.cos(data.angle) * data.r + data.x;
+        let by = Math.sin(data.angle) * data.r + data.y;
+
         this.myCanvas.beginPath();
         if (data.isChoosed) {
             this.myCanvas.strokeStyle = Attribute.propisChoosed;
@@ -233,6 +236,12 @@ export class RePaint {
         this.myCanvas.beginPath();
         this.myCanvas.moveTo(data.insePointX, data.insePointY);
         this.myCanvas.arc(data.insePointX, data.insePointY, Attribute.propPointR, 0, 2 * Math.PI, false);
+        this.myCanvas.fill();
+        this.myCanvas.moveTo(data.x, data.y);
+        this.myCanvas.arc(data.x, data.y, Attribute.propPointR, 0, 2 * Math.PI, false);
+        this.myCanvas.fill();
+        this.myCanvas.moveTo(bx, by);
+        this.myCanvas.arc(bx, by, Attribute.propPointR, 0, 2 * Math.PI, false);
         this.myCanvas.fill();
     }
 

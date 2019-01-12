@@ -55,11 +55,12 @@ export class CanvasChoosed {
      * @returns void
      */
     private isChoosed (): void {
-        let choosedIndex: number[][] = [];  // 存储所有被选中图形的下标
+        let choosedIndex: number[][] = [];  // 存储所有被选中图形的下标，[[0], [0, 0], [0, 0, -1]]
         this.index = [];  // 表示当前被选中图形的下标
         let data = this.canvasData.getData() as Tools[];  // 表示所有图形
 
         // 遍历所有图形，判断出符合选中的图形
+        // 最后画的最先遍历
         for (let i = data.length - 1; i >= 0; i--) {
             let v = data[i];
             switch (v.flag) {
@@ -78,85 +79,58 @@ export class CanvasChoosed {
                 }
                 break;
             case ToolsName.circular:
-                if (this.cirCircular(v)) {
-                    let tempArr: number[] = [];
-                    tempArr.push(i);
-
-                        // 遍历扇形和半径和直径
-                    for (let j = (v as InterCircular).fanAndRadius.length - 1; j >= 0; j--) {
-                        let v2 = (v as InterCircular).fanAndRadius[j];
-                        switch (v2.flag) {
-                        case ToolsName.fan:
-                            if (this.cirFan(v2)) {
-                                tempArr.push(j);
-
-                                // 判断弦是否被选中
-                                if (this.cirChord((v2 as InterFan).hasChord)) {
-                                    tempArr.push(-1);
-                                } else {
-                                    (v2 as InterFan).hasChord.isChoosed = false;
-                                }
+                let cirTool = (v as InterCircular).fanAndRadius;
+                for (let j = cirTool.length - 1; j >= 0; j--) {
+                    let v2 = cirTool[j];
+                    switch (v2.flag) {
+                    case ToolsName.fan:
+                        let v3 = (v2 as InterFan).hasChord;
+                        if (v3.isShow) {
+                            // 弦
+                            if (this.cirChord(v3)) {
+                                choosedIndex.push([i, j, -1]);
                             } else {
-                                v2.isChoosed = false;
+                                v3.isChoosed = false;
                             }
-                            break;
-                        case ToolsName.radius:
-                            if (this.cirRadius(v2)) {
-                                tempArr.push(j);
-                            } else {
-                                v2.isChoosed = false;
-                            }
-                            break;
-                        case ToolsName.diameter:
-                            if (this.cirDiameter(v2)) {
-                                tempArr.push(j);
-                            } else {
-                                v2.isChoosed = false;
-                            }
-                            break;
-                        default:
-                            break;
                         }
-                    }
 
-                    choosedIndex.push(tempArr);
+                        // 扇形
+                        if (this.cirFan(v2)) {
+                            choosedIndex.push([i, j]);
+                        } else {
+                            v2.isChoosed = false;
+                        }
+                        break;
+                    case ToolsName.radius:
+                        if (this.cirRadius(v2)) {
+                            choosedIndex.push([i, j]);
+                        } else {
+                            v2.isChoosed = false;
+                        }
+                        break;
+                    case ToolsName.diameter:
+                        if (this.cirDiameter(v2)) {
+                            choosedIndex.push([i, j]);
+                        } else {
+                            v2.isChoosed = false;
+                        }
+                        break;
+                    case ToolsName.tangent:
+                        if (this.cirTangent(v2)) {
+                            choosedIndex.push([i, j]);
+                        } else {
+                            v2.isChoosed = false;
+                        }
+                        break;
+                    default: break;
+                    }
+                }
+
+                // 圆
+                if (this.cirCircular(v)) {
+                    choosedIndex.push([i]);
                 } else {
                     v.isChoosed = false;
-
-                    // 遍历扇形和半径和直径和切线
-                    for (let j = (v as InterCircular).fanAndRadius.length - 1; j >= 0; j--) {
-                        let v2 = (v as InterCircular).fanAndRadius[j];
-                        switch (v2.flag) {
-                        case ToolsName.fan:
-                            if (!this.cirFan(v2)) {
-                                v2.isChoosed = false;
-
-                                if (!this.cirChord((v2 as InterFan).hasChord)) {
-                                    (v2 as InterFan).hasChord.isChoosed = false;
-                                }
-                            }
-                            break;
-                        case ToolsName.radius:
-                            if (!this.cirRadius(v2)) {
-                                v2.isChoosed = false;
-                            }
-                            break;
-                        case ToolsName.diameter:
-                            if (!this.cirDiameter(v2)) {
-                                v2.isChoosed = false;
-                            }
-                            break;
-                        case ToolsName.tangent:
-                            if (!this.cirTangent(v2)) {
-                                v2.isChoosed = false;
-                            } else {
-                                choosedIndex.push([i, j]);
-                            }
-                            break;
-                        default:
-                            break;
-                        }
-                    }
                 }
                 break;
             case ToolsName.letterFlag:
@@ -171,143 +145,59 @@ export class CanvasChoosed {
         }
 
         // 获取多个符合选中图形的choosedIndex中当前选中的下一个图形
-        // [[2, 0], [1, 1, 0], [0]]
-        for (let i = 0; i < choosedIndex.length; i++) {
+        for (let i = 0, count = 0, flag = false; ;i++) {
+            if (choosedIndex.length === 0) {
+                break;
+            }
+
+            // 为了一直循环遍历，从而找到被选中的图形，才能获取下一个图形
+            if (i > choosedIndex.length - 1) {
+                i = 0;
+                count++;
+            }
+
             let v = choosedIndex[i];
 
-            // 查询已被选中图形的位置
-            if (v.length === 1) {
-                // 点、线段、圆
-                if (data[v[0]].isChoosed) {
-                    // 被选中的图形
-                    if (i !== choosedIndex.length - 1) {
-                        // 不是最后一个，则获取下一个
-                        data[v[0]].isChoosed = false;
-                        this.index.push(choosedIndex[i + 1][0]);
-                        data[this.index[0]].isChoosed = true;
+            if (count === 0) {
+                // 遍历第一次
+                if (flag) {
+                    // 直接获取当前图形
+                    this.indLen(v, data).isChoosed = true;
+                    this.index = v;
 
-                        return;
-                    } else {
-                        // 最后一个，则获取第一个
-                        data[v[0]].isChoosed = false;
-                        this.index.push(choosedIndex[0][0]);
-                        data[this.index[0]].isChoosed = true;
+                    break;
+                } else {
+                    // 判断图形，如果被选中，则flag=true，并获取下一个图形；如果未被选中，则继续判断下一个图形
+                    if (this.indLen(v, data).isChoosed) {
+                        flag = true;
+                        this.indLen(v, data).isChoosed = false;
 
-                        return;
+                        continue;
                     }
                 }
+            } else if (count > 0) {
+                // 遍历第二次，直接获取当前图形
+                this.indLen(v, data).isChoosed = true;
+                this.index = v;
 
-                // 如果遍历完后，没有发现已被选中的图形，则获取第一个
-                if (i === choosedIndex.length - 1) {
-                    this.index.push(choosedIndex[0][0]);
-                    data[this.index[0]].isChoosed = true;
-
-                    return;
-                }
-            } else if (v.length > 1) {
-                // 扇形、半径、直径、弦、切线
-                for (let j = 0; j < v.length; j++) {
-                    let v2 = v[j];
-
-                    if (j === 0) {
-                        if (data[v2].isChoosed) {
-                            // 被选中的为圆，则获取圆里的下一个
-                            data[v2].isChoosed = false;
-                            this.index.push(v2);
-                            this.index.push(choosedIndex[i][j + 1]);
-                            (data[this.index[0]] as InterCircular).fanAndRadius[this.index[1]].isChoosed = true;
-
-                            return;
-                        } else {
-                            // 判断下一个是不是切线
-                            if ((data[v2] as InterCircular).fanAndRadius[choosedIndex[i][j + 1]].flag === ToolsName.tangent) {
-                                this.index.push(v2);
-                                this.index.push(choosedIndex[i][j + 1]);
-                                (data[this.index[0]] as InterCircular).fanAndRadius[this.index[1]].isChoosed = true;
-
-                                return;
-                            }
-                        }
-                    } else {
-                        // 判断当前为弦，还是为扇形或半径或直径或切线
-                        if (v2 === -1) {
-                            if (((data[v[0]] as InterCircular).fanAndRadius[v[j - 1]] as InterFan).hasChord.isChoosed) {
-                                if (j !== v.length - 1) {
-                                    // 第二层里不是最后一个，获取圆里的下一个
-                                    // 下一个为扇形或半径或直径或切线
-                                    ((data[v[0]] as InterCircular).fanAndRadius[v[j - 1]] as InterFan).hasChord.isChoosed = false;
-                                    this.index.push(v[0]);
-                                    this.index.push(choosedIndex[i][j + 1]);
-                                    (data[this.index[0]] as InterCircular).fanAndRadius[this.index[1]].isChoosed = true;
-
-                                    return;
-                                } else {
-                                    // 第二层里最后一个
-                                    if (i !== choosedIndex.length - 1) {
-                                        // 第一层里不是最后一个，则获取下一个
-                                        ((data[v[0]] as InterCircular).fanAndRadius[v[j - 1]] as InterFan).hasChord.isChoosed = false;
-                                        this.index.push(choosedIndex[i + 1][0]);
-                                        data[this.index[0]].isChoosed = true;
-
-                                        return;
-                                    } else {
-                                        // 第一层里最后一个，则获取第一个
-                                        ((data[v[0]] as InterCircular).fanAndRadius[v[j - 1]] as InterFan).hasChord.isChoosed = false;
-                                        this.index.push(choosedIndex[0][0]);
-                                        data[this.index[0]].isChoosed = true;
-
-                                        return;
-                                    }
-                                }
-                            }
-                        } else if ((data[v[0]] as InterCircular).fanAndRadius[v2].isChoosed) {
-                            // 被选中图形不是圆，而是圆里的扇形或半径或直径或弦或切线
-                            if (j !== v.length - 1) {
-                                // 第二层里不是最后一个，获取圆里的下一个
-                                // 如果当前为扇形，则判断下一个是否为弦(值为-1表示当前扇形里的弦，没有就表示无弦)，还是为半径或扇形
-                                (data[v[0]] as InterCircular).fanAndRadius[v2].isChoosed = false;  // 当前设置为未选中
-                                this.index.push(v[0]);  // 存放圆的索引
-                                if (choosedIndex[i][j + 1] === -1) {
-                                    this.index.push(choosedIndex[i][j]);  // 存放扇形的索引
-                                    this.index.push(choosedIndex[i][j + 1]);  // 存放弦的索引
-                                    ((data[this.index[0]] as InterCircular).fanAndRadius[this.index[1]] as InterFan).hasChord.isChoosed = true;
-                                } else {
-                                    this.index.push(choosedIndex[i][j + 1]);  // 存放下一个图形的索引(扇形或半径或直径或切线)
-                                    (data[this.index[0]] as InterCircular).fanAndRadius[this.index[1]].isChoosed = true;
-                                }
-
-                                return;
-                            } else {
-                                // 第二层里最后一个
-                                // 最后一个可能为扇形、半径、直径、弦、切线
-                                if (i !== choosedIndex.length - 1) {
-                                    // 第一层里不是最后一个，则获取下一个
-                                    (data[v[0]] as InterCircular).fanAndRadius[v2].isChoosed = false;
-                                    this.index.push(choosedIndex[i + 1][0]);
-                                    data[this.index[0]].isChoosed = true;
-
-                                    return;
-                                } else {
-                                    // 第一层里最后一个，则获取第一个
-                                    (data[v[0]] as InterCircular).fanAndRadius[v2].isChoosed = false;
-                                    this.index.push(choosedIndex[0][0]);
-                                    data[this.index[0]].isChoosed = true;
-
-                                    return;
-                                }
-                            }
-                        }
-                    }
-
-                    // 如果遍历完后，没有发现已被选中的图形，则获取第一个
-                    if (i === choosedIndex.length - 1 && j === v.length - 1) {
-                        this.index.push(choosedIndex[0][0]);
-                        data[this.index[0]].isChoosed = true;
-
-                        return;
-                    }
-                }
+                break;
             }
+        }
+    }
+
+    /**
+     * 返回当前图形的对象
+     * @param v
+     * @param data
+     * @param true 有图形被选中； false 没有图形被选中
+     */
+    private indLen (v: number[], data: Tools[]): Tools {
+        if (v.length === 1) {
+            return data[v[0]];
+        } else if (v.length === 2) {
+            return (data[v[0]] as InterCircular).fanAndRadius[v[1]];
+        } else if (v.length === 3) {
+            return ((data[v[0]] as InterCircular).fanAndRadius[v[1]] as InterFan).hasChord;
         }
     }
 
@@ -505,7 +395,7 @@ export class CanvasChoosed {
 
     /**
      * 计算切线
-     * @param tool 
+     * @param tool
      */
     private cirTangent (tool: Tools): boolean {
         let data = tool as InterTangent;

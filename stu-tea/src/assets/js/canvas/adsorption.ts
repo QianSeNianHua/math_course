@@ -1,5 +1,5 @@
 import { Attribute, ToolsName } from './enum/enum-configlib';
-import { InterAdsorp, Tools, InterCircular, InterFan, InterSegment, InterPoint, InterRadius } from './interface/inter-toolslib';
+import { InterAdsorp, Tools, InterCircular, InterFan, InterSegment, InterPoint, InterRadius, InterTangent } from './interface/inter-toolslib';
 import { CanvasData } from './canvasData';
 import { Intersect } from './intersect';
 
@@ -24,7 +24,7 @@ export class Adsorption {
         let temp: InterAdsorp;  // 存放临时数据
 
         for (let i = 0; i < (this.canvasData.getData() as Tools[]).length; i++) {
-            // 出去当前选中的图形
+            // 除去当前选中的图形
             let data = (this.canvasData.getData(i) as Tools);
             switch (data.flag) {
             case ToolsName.point:
@@ -50,7 +50,7 @@ export class Adsorption {
                     dist = temp.dist;
                     result = { x: temp.x, y: temp.y };
 
-                        // 扇形和半径和直径的磁性吸附
+                        // 扇形和半径和直径和切线的磁性吸附
                     for (let j = 0; j < (data as InterCircular).fanAndRadius.length; j++) {
                         let auxi = (data as InterCircular).fanAndRadius[j];
                         switch (auxi.flag) {
@@ -78,7 +78,29 @@ export class Adsorption {
                                 result = { x: temp.x, y: temp.y };
                             }
                             break;
+                        case ToolsName.tangent:
+                            if (!!index && index.length === 2 && index[1] === j) break;
+                            temp = this.adTangent(x, y, auxi);
+                            if (temp.flag) {
+                                dist = temp.dist;
+                                result = { x: temp.x, y: temp.y };
+                            }
+                            break;
                         default: break;
+                        }
+                    }
+                } else {
+                    // 切线
+                    for (let j = 0; j < (data as InterCircular).fanAndRadius.length; j++) {
+                        let auxi = (data as InterCircular).fanAndRadius[j];
+                        if (auxi.flag === ToolsName.tangent) {
+                            if (!!index && index.length === 2 && index[1] === j) break;
+                            temp = this.adTangent(x, y, auxi);
+                            if (temp.flag) {
+                                dist = temp.dist;
+                                result = { x: temp.x, y: temp.y };
+                            }
+                            break;
                         }
                     }
                 }
@@ -218,6 +240,33 @@ export class Adsorption {
             return { x: sx, y: sy, flag: true, dist: sdist };
         } else if (tdist <= Attribute.adsorption) {
             return { x: tx, y: ty, flag: true, dist: tdist };
+        } else {
+            return { x, y, flag: false };
+        }
+    }
+
+    /**
+     * 吸附切线
+     * @param x
+     * @param y
+     */
+    private adTangent (x: number, y: number, t: Tools): InterAdsorp {
+        let data = t as InterTangent;
+        let pdist = Math.sqrt(Math.pow((x - data.insePointX), 2) + Math.pow((y - data.insePointY), 2));
+        let adist = Math.sqrt(Math.pow((x - data.x), 2) + Math.pow((y - data.y), 2));
+        let bx = Math.cos(data.angle) * data.r + data.x;
+        let by = Math.sin(data.angle) * data.r + data.y;
+        let bdist = Math.sqrt(Math.pow((x - bx), 2) + Math.pow((y - by), 2));
+        let dist = Math.min(pdist, adist, bdist);
+
+        if (dist <= Attribute.adsorption) {
+            if (dist === pdist) {
+                return { x: data.insePointX, y: data.insePointY, flag: true, dist };
+            } else if (dist === adist) {
+                return { x: data.x, y: data.y, flag: true, dist };
+            } else if (dist === bdist) {
+                return { x: bx, y: by, flag: true, dist };
+            }
         } else {
             return { x, y, flag: false };
         }

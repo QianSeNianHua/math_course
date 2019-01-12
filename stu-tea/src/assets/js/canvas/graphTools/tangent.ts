@@ -19,6 +19,9 @@ export class Tangent implements InterTangent {
     angle: number;  // 表示角，单位为弧度
     insePointX: number;  // 表示切线与圆相交的x坐标
     insePointY: number;  // 表示相交的y坐标
+    cirX: number;  // 表示依赖的圆的⚪💗的x坐标
+    cirY: number;  // 表示依赖的圆的⚪💗的y坐标
+    cirR: number;  // 表示依赖的圆的半径
     anticlockwise?: boolean;  // false表示顺时针(默认)，true表示逆时针
 
     private isMobild: boolean;  // true为移动端，false为PC端
@@ -31,7 +34,6 @@ export class Tangent implements InterTangent {
     private canvasData: CanvasData;  // canvas图形数据
     private canvasChoosed: CanvasChoosed;  // 选中图形
     private intersect: Intersect;  // 相交
-    private cirData;  // 临时存放圆的数据
 
     constructor(isMobild: boolean, myCanvas: CanvasRenderingContext2D, myCanvasNode: HTMLElement, rePaint: RePaint, buttonListen: ButtonListen, canvasData: CanvasData, canvasChoosed: CanvasChoosed, intersect: Intersect) {
         this.flag = ToolsName.tangent;
@@ -75,16 +77,21 @@ export class Tangent implements InterTangent {
                 y = event.clientY - this.myCanvasNode.getBoundingClientRect().top;
             }
 
+            x += Attribute.mouseOffset;
+
             // 清除画布并重绘图形
             this.rePaint.clearCanvas();
             this.rePaint.rePaint();
 
             let index = this.canvasChoosed.getIndex();
-            this.cirData = (this.canvasData.getData(index[0]) as InterCircular);
-            let ao = Math.sqrt(Math.pow((x - this.cirData.x), 2) + Math.pow((y - this.cirData.y), 2));
-            let ang = Math.asin(this.cirData.r / ao);
+            let cirData = (this.canvasData.getData(index[0]) as InterCircular);
+            this.cirX = cirData.x;
+            this.cirY = cirData.y;
+            this.cirR = cirData.r;
+            let ao = Math.sqrt(Math.pow((x - this.cirX), 2) + Math.pow((y - this.cirY), 2));
+            let ang = Math.asin(this.cirR / ao);
             let ap = Math.cos(ang) * ao;
-            let png = Math.atan2((y - this.cirData.y), (x - this.cirData.x));
+            let png = Math.atan2((y - this.cirY), (x - this.cirX));
             png = (png >= 0) ? png : (2 * Math.PI + png);
             let pointx = Math.cos(Math.PI - ang + png) * ap + x;
             let pointy = Math.sin(Math.PI - ang + png) * ap + y;
@@ -128,16 +135,16 @@ export class Tangent implements InterTangent {
                 y = event.clientY - this.myCanvasNode.getBoundingClientRect().top;
             }
 
+            x += Attribute.mouseOffset;
+
             // 清除画布并重绘图形
             this.rePaint.clearCanvas();
             this.rePaint.rePaint();
 
-            let index = this.canvasChoosed.getIndex();
-            this.cirData = (this.canvasData.getData(index[0]) as InterCircular);
-            let ao = Math.sqrt(Math.pow((x - this.cirData.x), 2) + Math.pow((y - this.cirData.y), 2));
-            let ang = Math.asin(this.cirData.r / ao);
+            let ao = Math.sqrt(Math.pow((x - this.cirX), 2) + Math.pow((y - this.cirY), 2));
+            let ang = Math.asin(this.cirR / ao);
             let ap = Math.cos(ang) * ao;
-            let png = Math.atan2((y - this.cirData.y), (x - this.cirData.x));
+            let png = Math.atan2((y - this.cirY), (x - this.cirX));
             png = (png >= 0) ? png : (2 * Math.PI + png);
             let pointx = Math.cos(Math.PI - ang + png) * ap + x;
             let pointy = Math.sin(Math.PI - ang + png) * ap + y;
@@ -182,21 +189,27 @@ export class Tangent implements InterTangent {
                 this.y = event.clientY - this.myCanvasNode.getBoundingClientRect().top;
             }
 
+            this.x += Attribute.mouseOffset;
+
             // 清除画布并重绘图形
             this.rePaint.clearCanvas();
             this.rePaint.rePaint();
 
-            let index = this.canvasChoosed.getIndex();
-            this.cirData = (this.canvasData.getData(index[0]) as InterCircular);
-            let ao = Math.sqrt(Math.pow((this.x - this.cirData.x), 2) + Math.pow((this.y - this.cirData.y), 2));
-            let ang = Math.asin(this.cirData.r / ao);
+            // 设鼠标位置为点a，圆心为o，则ao表示ao之间的直线
+            // 设切点为p，则ang表示∠oap，ap表示ap之间的直线
+            // png表示右边x坐标轴到直线ao之间的角度
+            // (Math.PI - ang + png) 表示右边x坐标轴到直线ap之间的角度
+            let ao = Math.sqrt(Math.pow((this.x - this.cirX), 2) + Math.pow((this.y - this.cirY), 2));
+            let ang = Math.asin(this.cirR / ao);
             let ap = Math.cos(ang) * ao;
-            let png = Math.atan2((this.y - this.cirData.y), (this.x - this.cirData.x));
+            let png = Math.atan2((this.y - this.cirY), (this.x - this.cirX));
             png = (png >= 0) ? png : (2 * Math.PI + png);
             this.insePointX = Math.cos(Math.PI - ang + png) * ap + this.x;
             this.insePointY = Math.sin(Math.PI - ang + png) * ap + this.y;
             this.r = ap * 2;
             this.angle = (Math.PI - ang + png) > (2 * Math.PI) ? (Math.PI - ang + png) % (2 * Math.PI) : (Math.PI - ang + png);
+            let bx = Math.cos(this.angle) * this.r + this.x;
+            let by = Math.sin(this.angle) * this.r + this.y;
 
             // 画相交的点
             this.intersect.repaintPoint();
@@ -210,6 +223,12 @@ export class Tangent implements InterTangent {
             this.myCanvas.fillStyle = Attribute.propDFStyle;
             this.myCanvas.moveTo(this.insePointX, this.insePointY);
             this.myCanvas.arc(this.insePointX, this.insePointY, Attribute.propPointR, 0, 2 * Math.PI, false);
+            this.myCanvas.fill();
+            this.myCanvas.moveTo(this.x, this.y);
+            this.myCanvas.arc(this.x, this.y, Attribute.propPointR, 0, 2 * Math.PI, false);
+            this.myCanvas.fill();
+            this.myCanvas.moveTo(bx, by);
+            this.myCanvas.arc(bx, by, Attribute.propPointR, 0, 2 * Math.PI, false);
             this.myCanvas.fill();
 
             // 保存切线数据到对应的圆里
@@ -226,6 +245,6 @@ export class Tangent implements InterTangent {
      * 返回坐标数据
      */
     data(): InterTangent {
-        return { flag: this.flag, isChoosed: this.isChoosed, lock: false, x: this.x, y: this.y, r: this.r, angle: this.angle, insePointX: this.insePointX, insePointY: this.insePointY, anticlockwise: this.anticlockwise };
+        return { flag: this.flag, isChoosed: this.isChoosed, lock: false, x: this.x, y: this.y, r: this.r, angle: this.angle, insePointX: this.insePointX, insePointY: this.insePointY, cirX: this.cirX, cirY: this.cirY, cirR: this.cirR, anticlockwise: this.anticlockwise };
     }
 }

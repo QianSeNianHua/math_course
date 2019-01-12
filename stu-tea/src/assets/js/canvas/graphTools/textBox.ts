@@ -1,5 +1,5 @@
 import { ToolsName, Auxiliary, Attribute } from '../enum/enum-configlib';
-import { Tools, InterCircular, InterSegment, InterFan, InterRadius, InterDiameter } from '../interface/inter-toolslib';
+import { Tools, InterCircular, InterSegment, InterFan, InterRadius, InterDiameter, InterTangent } from '../interface/inter-toolslib';
 import { CanvasChoosed } from '../canvasChoosed';
 import { CanvasData } from '../canvasData';
 import { RePaint } from '../rePaint';
@@ -118,7 +118,7 @@ export class TextBox {
                         inputNode.value = '0.1';
                     }
                     (data as InterCircular).r = parseFloat(inputNode.value) * Attribute.unitProp;
-                        // 圆上的扇形和半径和直径和弦也要跟着改变
+                        // 圆上的扇形和半径和直径和弦和切线也要跟着改变
                     let fanRad = (data as InterCircular).fanAndRadius;
                     for (let i of fanRad) {
                         switch (i.flag) {
@@ -135,6 +135,17 @@ export class TextBox {
                             break;
                         case ToolsName.diameter:
                             (i as InterDiameter).r = parseFloat(inputNode.value) * Attribute.unitProp;
+                            break;
+                        case ToolsName.tangent:
+                            let tempt = i as InterTangent;
+                            tempt.cirR = parseFloat(inputNode.value) * Attribute.unitProp;
+                            let ao = Math.sqrt(Math.pow((tempt.x - tempt.cirX), 2) + Math.pow((tempt.y - tempt.cirY), 2));
+                            let poaAngle = Math.PI - Math.sinh(tempt.r / ao);
+                            let ap = Math.cos(poaAngle) * ao;
+                            tempt.r = 2 * ap;
+                            let angle = Math.atan2((tempt.y - tempt.cirY), (tempt.x - tempt.cirX));
+                            angle = (angle >= 0) ? angle : (2 * Math.PI + angle);
+                            console.log(poaAngle);
                             break;
                         default: break;
                         }
