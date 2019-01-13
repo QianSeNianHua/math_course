@@ -1,0 +1,29 @@
+a{text-decoration: none;color: green;outline: none;}
+a:hover{text-decoration: none;color: red;outline: none;}
+/*body 布局*/
+/*日期栏布局*/
+.box_head_clear{position: relative;left: 300px;top: -180%;}
+.box_head_time{width: 100%;height: 75px;overflow: hidden;position: fixed;z-index: 100; margin-top: 66.5px; background-color: rgba(0,151,30,0.2);}
+.box_head_time>ul>li>select>option{background-color: rgba(0,151,30,0.2);}
+.box_head_time>ul>li>select{padding: 0 5%; padding-right: 0px;}
+::-webkit-scrollbar{display: none;}
+::-ms-scrollbar{display: none;}
+::-ms-expand { background-color: transparent; border: none; }
+/*::-ms-overflow-style:none;*/
+/*end 日期栏布局*/
+
+.box_head_time_code{ width: 32px; height: 33px; background-repeat: no-repeat;background-size: cover;-webkit-background-size: cover;position: absolute;top: 24px;left: 74.5px;}
+.box_head_time>ul{width: 324px; float: left; height: 25px; color: #00971E; list-style: none; padding: 30px 0px 21px 118px}
+.box_head_time>ul>li{float: left; width: 108px; height: 23.75px;  color: #00971E;}
+.box_head_time>ul>li>select{background-color: transparent; border: 2px solid #00971E;border-radius: 10px; outline: none; width: 66.5px; height: 23.75px; color: #00971E; }
+.box_head_search{position: relative;left: 320px;top: -150%;}
+.box_body{top: 66.5px; padding-top: 24px;}
+.box_body_border_code{ margin: 29px 11px 22px 32px; float: left;background-image: url(../img/yuan.png); width: 38px; height: 38px; background-repeat: no-repeat;background-size: cover;-webkit-background-size: cover; line-height: 2.5; text-align: center; color: white;}
+ul#imgUl{display: block; margin: 5% 5%; overflow: hidden;}
+.box_body_border>ul>li{width: 254px; height: 178px; display: inline-block; text-align: center; overflow: hidden; float: left; margin-right: 10px; margin-bottom: 27px; border: 1px solid salmon;}
+.box_body_border>ul>li>a{width: 100%; height: 100%; display: inline-block;}
+.img{border-radius: 5px; background-position: center center; background-repeat: no-repeat; background-size: cover;  -webkit-background-size: cover; -moz-background-size: cover;}
+
+.img_show{width: 100%; background-color: rgba(0,151,30,0.2); position: absolute; top: 66.5px; bottom: 0px; z-index: 10; display: none;}
+button.close{width: 50px; height: 50px; border-radius: 25px; position: absolute; top: 30px; right: 20px; background-color: tomato; color: white; font-weight: bold; line-height: 50px; font-size: 30px; z-index: 11;}
+.img_content{background-color: white; margin: 50px 40px; box-sizing: border-box; border: 2px solid tomato; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px; background-position: center center; background-repeat: no-repeat;}

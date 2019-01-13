@@ -90,20 +90,27 @@ export class Tangent implements InterTangent {
             this.cirR = cirData.r;
             let ao = Math.sqrt(Math.pow((x - this.cirX), 2) + Math.pow((y - this.cirY), 2));
             let ang = Math.asin(this.cirR / ao);
-            let ap = Math.cos(ang) * ao;
+            let ap = parseFloat(((Math.cos(ang) * ao) / Attribute.unitProp).toFixed(1)) * Attribute.unitProp;
+            if (ap < (Attribute.unitProp / 2)) {
+                ap = Attribute.unitProp / 2;
+            }
+            let r = ap * 2;
             let png = Math.atan2((y - this.cirY), (x - this.cirX));
             png = (png >= 0) ? png : (2 * Math.PI + png);
-            let pointx = Math.cos(Math.PI - ang + png) * ap + x;
-            let pointy = Math.sin(Math.PI - ang + png) * ap + y;
+            let angle = (Math.PI - ang + png);
+            angle = (angle >= (2 * Math.PI)) ? (angle - 2 * Math.PI) : angle;
+            let pointx = Math.cos(angle) * ap + x;
+            let pointy = Math.sin(angle) * ap + y;
 
             // 画相交的点
             this.intersect.repaintPoint();
 
+            // 画切线
             this.myCanvas.beginPath();
             this.myCanvas.strokeStyle = Attribute.propNSStyle;
             this.myCanvas.lineWidth = Attribute.propWitdh;
             this.myCanvas.moveTo(x, y);
-            this.myCanvas.arc(x, y, ap * 2, (Math.PI - ang + png), (Math.PI - ang + png), this.anticlockwise);
+            this.myCanvas.arc(x, y, r, angle, angle, this.anticlockwise);
             this.myCanvas.stroke();
             this.myCanvas.fillStyle = Attribute.propNFStyle;
             this.myCanvas.moveTo(pointx, pointy);
@@ -142,12 +149,20 @@ export class Tangent implements InterTangent {
             this.rePaint.rePaint();
 
             let ao = Math.sqrt(Math.pow((x - this.cirX), 2) + Math.pow((y - this.cirY), 2));
-            let ang = Math.asin(this.cirR / ao);
-            let ap = Math.cos(ang) * ao;
+            let oapAngle = Math.asin(this.cirR / ao);
+            let ap = parseFloat(((Math.cos(oapAngle) * ao) / Attribute.unitProp).toFixed(1)) * Attribute.unitProp;
+            if (ap < (Attribute.unitProp / 2)) {
+                ap = Attribute.unitProp / 2;
+            }
+            let r = ap * 2;
             let png = Math.atan2((y - this.cirY), (x - this.cirX));
             png = (png >= 0) ? png : (2 * Math.PI + png);
-            let pointx = Math.cos(Math.PI - ang + png) * ap + x;
-            let pointy = Math.sin(Math.PI - ang + png) * ap + y;
+            let angle = (Math.PI - oapAngle + png);
+            angle = (angle >= (2 * Math.PI)) ? (angle - 2 * Math.PI) : angle;
+            let pointx = Math.cos(angle) * ap + x;
+            let pointy = Math.sin(angle) * ap + y;
+
+            let value = parseFloat((r / Attribute.unitProp).toFixed(1));
 
             // 画相交的点
             this.intersect.repaintPoint();
@@ -156,12 +171,50 @@ export class Tangent implements InterTangent {
             this.myCanvas.strokeStyle = Attribute.propNSStyle;
             this.myCanvas.lineWidth = Attribute.propWitdh;
             this.myCanvas.moveTo(x, y);
-            this.myCanvas.arc(x, y, ap * 2, (Math.PI - ang + png), (Math.PI - ang + png), this.anticlockwise);
+            this.myCanvas.arc(x, y, r, angle, angle, this.anticlockwise);
             this.myCanvas.stroke();
             this.myCanvas.fillStyle = Attribute.propNFStyle;
             this.myCanvas.moveTo(pointx, pointy);
             this.myCanvas.arc(pointx, pointy, Attribute.propPointR, 0, 2 * Math.PI, false);
             this.myCanvas.fill();
+
+            // 画尺子
+            this.myCanvas.beginPath();
+            this.myCanvas.strokeStyle = Attribute.propDSStyle;
+            this.myCanvas.lineWidth = 2;
+            this.myCanvas.moveTo(x, y);
+            let rulep = this.rotatexy(x, y, 0, 20, angle);
+            this.myCanvas.lineTo(rulep.x, rulep.y);
+            rulep = this.rotatexy(x, y, r, 20, angle);
+            this.myCanvas.lineTo(rulep.x, rulep.y);
+            rulep = this.rotatexy(x, y, r, 0, angle);
+            this.myCanvas.lineTo(rulep.x, rulep.y);
+            this.myCanvas.strokeStyle = Attribute.propDSStyle;
+            this.myCanvas.lineWidth = 2;
+            for (let i = 10; i < r; i += 10) {
+                rulep = this.rotatexy(x, y, i, 0, angle);
+                this.myCanvas.moveTo(rulep.x, rulep.y);
+                rulep = this.rotatexy(x, y, i, 5, angle);
+                this.myCanvas.lineTo(rulep.x, rulep.y);
+                i += 10;
+                if (i < r) {
+                    rulep = this.rotatexy(x, y, i, 0, angle);
+                    this.myCanvas.moveTo(rulep.x, rulep.y);
+                    rulep = this.rotatexy(x, y, i, 10, angle);
+                    this.myCanvas.lineTo(rulep.x, rulep.y);
+                }
+            }
+            this.myCanvas.stroke();
+
+            // 画文本
+            this.myCanvas.save();
+            this.myCanvas.beginPath();
+            this.myCanvas.translate(x, y);
+            this.myCanvas.rotate(angle);
+            this.myCanvas.font = Attribute.propFont;
+            this.myCanvas.fillStyle = Attribute.propDFStyle;
+            this.myCanvas.fillText(value + 'cm', r / 2 - 22, -30);
+            this.myCanvas.restore();
         }
     }
 
@@ -200,14 +253,27 @@ export class Tangent implements InterTangent {
             // png表示右边x坐标轴到直线ao之间的角度
             // (Math.PI - ang + png) 表示右边x坐标轴到直线ap之间的角度
             let ao = Math.sqrt(Math.pow((this.x - this.cirX), 2) + Math.pow((this.y - this.cirY), 2));
-            let ang = Math.asin(this.cirR / ao);
-            let ap = Math.cos(ang) * ao;
+            let oapAngle = Math.asin(this.cirR / ao);
+            if (isNaN(oapAngle)) {
+                // 恢复按钮标志
+                this.buttonListen.recoverButtonFlag();
+
+                // 清除canvasChoosed的下标
+                this.canvasChoosed.recoverIndex();
+
+                return;
+            }
+            let ap = parseFloat(((Math.cos(oapAngle) * ao) / Attribute.unitProp).toFixed(1)) * Attribute.unitProp;
+            if (ap < (Attribute.unitProp / 2)) {
+                ap = Attribute.unitProp / 2;
+            }
             let png = Math.atan2((this.y - this.cirY), (this.x - this.cirX));
             png = (png >= 0) ? png : (2 * Math.PI + png);
-            this.insePointX = Math.cos(Math.PI - ang + png) * ap + this.x;
-            this.insePointY = Math.sin(Math.PI - ang + png) * ap + this.y;
+            let angle = (Math.PI - oapAngle + png);
+            this.angle = (angle >= (2 * Math.PI)) ? (angle - 2 * Math.PI) : angle;
+            this.insePointX = Math.cos(this.angle) * ap + this.x;
+            this.insePointY = Math.sin(this.angle) * ap + this.y;
             this.r = ap * 2;
-            this.angle = (Math.PI - ang + png) > (2 * Math.PI) ? (Math.PI - ang + png) % (2 * Math.PI) : (Math.PI - ang + png);
             let bx = Math.cos(this.angle) * this.r + this.x;
             let by = Math.sin(this.angle) * this.r + this.y;
 
@@ -239,6 +305,20 @@ export class Tangent implements InterTangent {
             // 清除canvasChoosed的下标
             this.canvasChoosed.recoverIndex();
         }
+    }
+
+    /**
+     * 旋转后的坐标
+     * @param ox 原点x坐标
+     * @param oy 原点y坐标
+     * @param px 所求点的x坐标，此时以线段原点O为坐标原点，所求点P在x坐标上
+     * @param py 所求点的y坐标，同上，x坐标向上为正，向下为负
+     * @param angle 角度，顺时针
+     */
+    private rotatexy(ox: number, oy: number, px: number, py: number, angle: number): {x: number, y: number} {
+        let x = px * Math.cos(angle) + py * Math.sin(angle) + ox;
+        let y = px * Math.sin(angle) - py * Math.cos(angle) + oy;
+        return { x, y };
     }
 
     /**

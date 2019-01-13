@@ -76,4 +76,5 @@
 </template>
 
 <style scoped src="./index.css"></style>
+<script src="../../assets/js/mui.min.js"></script>
 <script lang="ts" src="./index.ts"></script>

@@ -137,15 +137,15 @@ export class TextBox {
                             (i as InterDiameter).r = parseFloat(inputNode.value) * Attribute.unitProp;
                             break;
                         case ToolsName.tangent:
+                            // 设圆心为o，切线起点为a，切点为p
                             let tempt = i as InterTangent;
+                            let aopAngle = Math.atan2(tempt.insePointY - tempt.cirY, tempt.insePointX - tempt.cirX);
+                            aopAngle = (aopAngle >= 0) ? aopAngle : (2 * Math.PI + aopAngle);
                             tempt.cirR = parseFloat(inputNode.value) * Attribute.unitProp;
-                            let ao = Math.sqrt(Math.pow((tempt.x - tempt.cirX), 2) + Math.pow((tempt.y - tempt.cirY), 2));
-                            let poaAngle = Math.PI - Math.sinh(tempt.r / ao);
-                            let ap = Math.cos(poaAngle) * ao;
-                            tempt.r = 2 * ap;
-                            let angle = Math.atan2((tempt.y - tempt.cirY), (tempt.x - tempt.cirX));
-                            angle = (angle >= 0) ? angle : (2 * Math.PI + angle);
-                            console.log(poaAngle);
+                            tempt.insePointX = Math.cos(aopAngle) * tempt.cirR + tempt.cirX;
+                            tempt.insePointY = Math.sin(aopAngle) * tempt.cirR + tempt.cirY;
+                            tempt.x = tempt.insePointX - (Math.cos(tempt.angle) * (tempt.r / 2));
+                            tempt.y = tempt.insePointY - (Math.sin(tempt.angle) * (tempt.r / 2));
                             break;
                         default: break;
                         }

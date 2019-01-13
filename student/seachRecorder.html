@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="css/commona.css"/>
+		<link rel="stylesheet" type="text/css" href="css/seachRecorder.css"/>
+
+	</head>
+	<body>
+		<div class="box_head">
+			<a href="index.html"><button class="box_head_back">返回</button></a>
+			<h1 class="box_head_title">试题记录</h1>
+		</div>
+
+		<div class="box_body">
+			<div class="box_body_border_out">
+				<div class="box_body_border">
+					<ul id="imgUl">
+						<!-- <li><a href="paintRecorder.html" class="img"></a></li> -->
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="img_show">
+			<button class="close">X</button>
+			<div class="img_content"></div>
+		</div>
+	</body>
+
+
+
+	<script src="js/mui.min.js"></script>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript">
+		mui.init({});
+		mui.plusReady(function() {
+				plus.io.requestFileSystem(plus.io.PRIVATE_DOC, function(fs) {
+				fs.root.createReader().readEntries(function(entris) {
+					for (var i = entris.length - 1; i >= 0; i--) {
+						var aNode = jQuery('<a href="javascript:;" class="img"></a>').css('background-image', 'url(' + entris[i].fullPath + ')');
+						var liNode = jQuery('<li></li>').append(aNode);
+						jQuery('ul#imgUl').append(liNode);
+					}
+				});
+			});
+		});
+
+		jQuery(function() {
+			(function($) {
+				var imgurl = '';
+				$('ul#imgUl').on('click', 'li', function(e) {
+					$('.img_show').show();
+					imgurl = $(this).children('a').css('background-image');
+					$('.img_content').css('background-image', imgurl);
+				});
+				$('button.close').on('click', function() {
+					$('.img_show').hide();
+				});
+			})(jQuery);
+		});
+	</script>
+
+</html>

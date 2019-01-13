@@ -1,0 +1,8 @@
+/*body 布局*/
+.box_body{position: fixed;top: 66.5px;bottom: 0;left: 0;right: 0;box-sizing: border-box;padding: 0px; background-image: url(../img/beijing2.png);background-size: cover;-webkit-background-size: cover;background-color: rgba(0,151,30,0.2);}
+#newbtn{background-image: url(../img/tubiao1.png); width: 174.5px; height: 52.5px;background-repeat: no-repeat;background-size: cover;-webkit-background-size: cover;font-size: 20px;color: white;text-align: center;line-height: 45px;}
+#checkbtn{background-image: url(../img/tubiao2.png);width: 238.5px; height: 52.5px;background-repeat: no-repeat;background-size: cover;-webkit-background-size: cover;font-size: 20px;color: white;text-align: center;line-height: 45px;}
+#recordbtn{background-image: url(../img/tubiao1.png);width: 174.5px; height: 52.5px;background-repeat: no-repeat;background-size: cover;-webkit-background-size: cover;font-size: 20px;color: white;text-align: center;line-height: 45px;}
+.button_tools>ul{list-style: none; width: 862.5px; height: 174.5px; overflow: hidden; position: absolute; top: 50%; left: 50%; margin-top: -87.25px; margin-left: -250px;}
+.button_tools>ul>li{float: left; width: 238.5px; height: 176px; text-align: center; margin-right: 30px;}
+/*end body 布局*/
