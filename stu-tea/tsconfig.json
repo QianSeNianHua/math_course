@@ -35,6 +35,7 @@
             "es5",
             "es2015",
             "es2015.promise"
-        ]
+        ],
+        "allowJs": true
     }
 }

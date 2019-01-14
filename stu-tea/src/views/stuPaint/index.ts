@@ -8,7 +8,6 @@ import $ from 'jquery'
 import config from '../../common/config'
 import { Eapi } from '../../common/api'
 import ajax from '../../common/customAjax'
-import mui from '../../assets/js/mui.min.js'
 
 @Component({
     components: {
@@ -104,7 +103,7 @@ export default class StuPaint extends Vue {
     winChange (): void {
         let that = this;
         window.onresize = function () {
-            that.setArticle();
+            // that.setArticle();
             that.getArtHeig();
             that.structure();
             that.infoMaskVetical();
@@ -179,49 +178,76 @@ export default class StuPaint extends Vue {
             if ((data['data'] as []).length !== 0) {
                 let tempData = data['data'][0];
                 $('article.questPanel>div').text(tempData['q_content']);
+                let board = [];
+                try {
+                    board = JSON.parse(tempData['q_board']);
+                } catch (error) {
+                    board = [];
+                }
+                that.canvas.initData(board);
             }
         }).catch((mess) => {
             // 连接失败
         });
     }
 
-    // 保存画板内容
-    saveData (): void {
-        mui.plusReady(function() {
-            let image = new Image();
-            let imageCont = (document.getElementById('myCanvas') as HTMLCanvasElement).toDataURL('image/png');
+    // 手机端：保存画板内容
+    private saveData (): void {
+        let image = new Image();
+        let imageCont = (document.getElementById('myCanvas') as HTMLCanvasElement).toDataURL('image/png');
 
-            let chars = ['0','a','b','1','c','d','2','e','f','3','g','h','4','i','j','5','k','l','6','m','n','7','o','p','8','q','r','9','s','t','u','v','w','x','y','z'];
-            let res = '';
-            for (let i = 0; i < 10; i++) {
-                res += chars[Math.ceil(Math.random() * 35)];
-            }
-            let imgName = new Date().getTime() + res;
-
-            // 先保存到本地，再发送到后端
-            let bitmap = new mui.plus.nativeObj.Bitmap('test');
-            bitmap.loadBase64Data(imageCont, function() {
-                bitmap.save('_doc/' + imgName + '.png', {
-                    overwrite: true,
-                    format: 'png',
-                    quality: 100
-                }, function(i) {
-                    mui.alert('图片保存成功');
-                }, function(e) {
-                    mui.alert('保存图片失败');
-                });
-            }, function(e) {
-                mui.alert('加载图片失败');
-            });
-
-            this.imgUpload({
-                'imgName': imgName,
-                'imgData': imageCont
-            }, function(data) {
-            }, function(xml, status, err) {
-                mui.alert('请检查网络是否连接');
-            });
+        let chars = ['0','a','b','1','c','d','2','e','f','3','g','h','4','i','j','5','k','l','6','m','n','7','o','p','8','q','r','9','s','t','u','v','w','x','y','z'];
+        let res = '';
+        for (let i = 0; i < 10; i++) {
+            res += chars[Math.ceil(Math.random() * 35)];
         }
+        let imgName = new Date().getTime() + res;
+
+        // 先保存到本地，再发送到后端
+        let bitmap = new window['plus'].nativeObj.Bitmap('test');
+        bitmap.loadBase64Data(imageCont, function() {
+            bitmap.save('_doc/' + imgName + '.png', {
+                overwrite: true,
+                format: 'png',
+                quality: 100
+            }, function(i) {
+                mui.alert('图片保存成功');
+            }, function(e) {
+                mui.alert('保存图片失败');
+            });
+        }, function(e) {
+            mui.alert('加载图片失败');
+        });
+
+        this.imgUpload({
+            'imgName': imgName,
+            'imgData': imageCont
+        }, function(data) {
+        }, function(xml, status, err) {
+            mui.alert('请检查网络是否连接');
+        });
+    }
+
+    // PC端：上传图片
+    private uploadImage (): void {
+        let image = new Image();
+        let imageCont = (document.getElementById('myCanvas') as HTMLCanvasElement).toDataURL('image/png');
+
+        let chars = ['0','a','b','1','c','d','2','e','f','3','g','h','4','i','j','5','k','l','6','m','n','7','o','p','8','q','r','9','s','t','u','v','w','x','y','z'];
+        let res = '';
+        for (let i = 0; i < 10; i++) {
+            res += chars[Math.ceil(Math.random() * 35)];
+        }
+        let imgName = new Date().getTime() + res;
+
+        this.imgUpload({
+            'imgName': imgName,
+            'imgData': imageCont
+        }, function(data) {
+            alert('图片上传成功');
+        }, function(xml, status, err) {
+            alert('请检查网络是否连接');
+        });
     }
 
     // 上传图片
@@ -232,7 +258,29 @@ export default class StuPaint extends Vue {
         }).catch(() => {
             errCall();
         });
-    };
+    }
+
+    // mui.plus
+    muiPlusReady (): void {
+        let that = this;
+
+        if (this.canvas.isMobile()) {
+            // 手机
+            mui.plusReady(function() {
+                document.getElementById('saveDataBtn').addEventListener('click', function() {
+                    that.saveData();
+                });
+            });
+
+            mui.back = function () {};
+        } else {
+            // PC
+            document.getElementById('saveDataBtn').addEventListener('click', function() {
+                that.uploadImage();
+            });
+        }
+
+    }
 
     mounted () {
         this.messageQid();  // 接收socket发送的消息
@@ -243,5 +291,6 @@ export default class StuPaint extends Vue {
         this.setPaintAttr(); // 设置画板的宽度和高度
         this.winChange();
         this.paint();  // 画板
+        this.muiPlusReady();  // mui
     }
 }

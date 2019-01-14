@@ -86,7 +86,7 @@ export default class MyCanvas {
     }
 
     // 判断是移动端还是电脑端
-    private isMobile (): boolean {
+    public isMobile (): boolean {
         let sUserAgent: string = navigator.userAgent.toLowerCase();
         let bIsIpad: boolean = (/ipad/i).test(sUserAgent);
         let bIsIphoneOs: boolean = (/iphone os/i).test(sUserAgent);

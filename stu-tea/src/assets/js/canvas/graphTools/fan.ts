@@ -133,8 +133,17 @@ export class Fan implements InterFan {
             this.x = (this.canvasData.getData(index[0]) as Tools).x;
             this.y = (this.canvasData.getData(index[0]) as Tools).y;
             this.r = (this.canvasData.getData(index[0]) as InterCircular).r;
+
             let angle = Math.atan2((y - this.y), (x - this.x));
             angle = (angle >= 0) ? angle : (2 * Math.PI + angle);
+            if (angle < this.startAngle) {
+                angle = angle + 2 * Math.PI;
+            }
+            if ((angle - this.startAngle) >= (3 * Math.PI / 2) && (angle - this.startAngle) <= 2 * Math.PI) {
+                angle = this.startAngle;
+            } else if ((angle - this.startAngle) > Math.PI && (angle - this.startAngle) < (3 * Math.PI / 2)) {
+                angle = (this.startAngle + Math.PI) % (2 * Math.PI);
+            }
             angle = Math.round((180 / Math.PI) * angle) * (Math.PI / 180);
 
             // 画相交的点
@@ -302,6 +311,14 @@ export class Fan implements InterFan {
             this.r = (this.canvasData.getData(index[0]) as InterCircular).r;
             let angle = Math.atan2((y - this.y), (x - this.x));
             angle = (angle >= 0) ? angle : (2 * Math.PI + angle);
+            if (angle < this.startAngle) {
+                angle = angle + 2 * Math.PI;
+            }
+            if ((angle - this.startAngle) >= (3 * Math.PI / 2) && (angle - this.startAngle) <= 2 * Math.PI) {
+                angle = this.startAngle;
+            } else if ((angle - this.startAngle) > Math.PI && (angle - this.startAngle) < (3 * Math.PI / 2)) {
+                angle = (this.startAngle + Math.PI) % (2 * Math.PI);
+            }
             angle = Math.round((180 / Math.PI) * angle) * (Math.PI / 180);
 
             // 画相交的点
@@ -381,6 +398,14 @@ export class Fan implements InterFan {
             this.r = (this.canvasData.getData(index[0]) as InterCircular).r;
             let angle = Math.atan2((y - this.y), (x - this.x));
             angle = (angle >= 0) ? angle : (2 * Math.PI + angle);
+            if (angle < this.startAngle) {
+                angle = angle + 2 * Math.PI;
+            }
+            if ((angle - this.startAngle) >= (3 * Math.PI / 2) && (angle - this.startAngle) <= 2 * Math.PI) {
+                angle = this.startAngle;
+            } else if ((angle - this.startAngle) > Math.PI && (angle - this.startAngle) < (3 * Math.PI / 2)) {
+                angle = (this.startAngle + Math.PI) % (2 * Math.PI);
+            }
             angle = Math.round((180 / Math.PI) * angle) * (Math.PI / 180);
 
             // 画相交的点
@@ -515,6 +540,14 @@ export class Fan implements InterFan {
             this.r = (this.canvasData.getData(index[0]) as InterCircular).r;
             let angle = Math.atan2((y - this.y), (x - this.x));
             angle = (angle >= 0) ? angle : (2 * Math.PI + angle);
+            if (angle < this.startAngle) {
+                angle = angle + 2 * Math.PI;
+            }
+            if ((angle - this.startAngle) >= (3 * Math.PI / 2) && (angle - this.startAngle) <= 2 * Math.PI) {
+                angle = this.startAngle;
+            } else if ((angle - this.startAngle) > Math.PI && (angle - this.startAngle) < (3 * Math.PI / 2)) {
+                angle = (this.startAngle + Math.PI) % (2 * Math.PI);
+            }
             this.endAngle = Math.round((180 / Math.PI) * angle) * (Math.PI / 180);
             this.hasChord.endX = Math.cos(this.endAngle) * this.r + this.x;
             this.hasChord.endY = Math.sin(this.endAngle) * this.r + this.y;

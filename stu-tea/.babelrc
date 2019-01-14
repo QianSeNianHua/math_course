@@ -7,5 +7,6 @@
         "node": "current"
       }
     }]
-  ]
+  ],
+  "ignore": ["./static/js/mui.js"]
 }

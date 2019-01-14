@@ -42,9 +42,14 @@ module.exports = {
     plugins: [
         new webpack.ProvidePlugin({
             $: 'jquery',
-            jQuery: 'jquery'
+            jQuery: 'jquery',
+            mui: 'mui',
+            'window.mui': 'mui'
         })
     ],
+    externals: {
+        'mui': 'mui'
+    },
     module: {
         rules: [
             ...(config.dev.useEslint ? [createLintingRule()] : []),

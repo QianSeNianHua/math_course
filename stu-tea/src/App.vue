@@ -27,10 +27,17 @@ ul {
 }
 button {
     cursor: pointer;
+    background-color: initial;
+    border-radius: 0;
 }
 button:active {
     opacity: 0.5;
     -webkit-tap-highlight-color:transparent;
+}
+button:enabled:active {
+    opacity: 0.5;
+    -webkit-tap-highlight-color:transparent;
+    background-color: initial;
 }
 button:focus {
     outline: none;

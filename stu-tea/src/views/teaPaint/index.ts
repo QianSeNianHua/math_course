@@ -178,10 +178,77 @@ export default class TeaPaint extends Vue {
             if ((data['data'] as []).length !== 0) {
                 let tempData = data['data'][0];
                 $('article.questPanel>div').text(tempData['q_content']);
+                let board = [];
+                try {
+                    board = JSON.parse(tempData['q_board']);
+                } catch (error) {
+                    board = [];
+                }
+                that.canvas.initData(board);
             }
         }).catch((mess) => {
             // 连接失败
         });
+    }
+
+    // 保存画板内容
+    private saveData (): void {
+        let image = new Image();
+        let imageCont = (document.getElementById('myCanvas') as HTMLCanvasElement).toDataURL('image/png');
+
+        let chars = ['0','a','b','1','c','d','2','e','f','3','g','h','4','i','j','5','k','l','6','m','n','7','o','p','8','q','r','9','s','t','u','v','w','x','y','z'];
+        let res = '';
+        for (let i = 0; i < 10; i++) {
+            res += chars[Math.ceil(Math.random() * 35)];
+        }
+        let imgName = new Date().getTime() + res;
+
+        // 先保存到本地，再发送到后端
+        let bitmap = new window['plus'].nativeObj.Bitmap('test');
+        bitmap.loadBase64Data(imageCont, function() {
+            bitmap.save('_doc/' + imgName + '.png', {
+                overwrite: true,
+                format: 'png',
+                quality: 100
+            }, function(i) {
+                mui.alert('图片保存成功');
+            }, function(e) {
+                mui.alert('保存图片失败');
+            });
+        }, function(e) {
+            mui.alert('加载图片失败');
+        });
+
+        this.imgUpload({
+            'imgName': imgName,
+            'imgData': imageCont
+        }, function(data) {
+        }, function(xml, status, err) {
+            mui.alert('请检查网络是否连接');
+        });
+    }
+
+    // 上传图片
+    imgUpload (data: {}, succCall: Function, errCall: Function) {
+        let postUrl = 'http://' + config().host + ':' + config().post + '/' + config().project + '/' + config().api + '/' + Eapi.paintsaveImage;
+        ajax(postUrl, data).then((data) => {
+            succCall(data);
+        }).catch(() => {
+            errCall();
+        });
+    }
+
+    // mui.plus
+    muiPlusReady (): void {
+        let that = this;
+
+        mui.plusReady(function() {
+            document.getElementById('saveDataBtn').addEventListener('click', function() {
+                that.saveData();
+            });
+        });
+
+        mui.back = function () {};
     }
 
     mounted () {
@@ -192,6 +259,7 @@ export default class TeaPaint extends Vue {
         this.infoMaskVetical();  // 设置inforMask的宽度和高度
         this.setPaintAttr(); // 设置画板的宽度和高度
         this.winChange();
-        this.paint();
+        this.paint();  // 画板
+        this.muiPlusReady();  // mui
     }
 }

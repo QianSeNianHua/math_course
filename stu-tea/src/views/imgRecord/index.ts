@@ -3,6 +3,7 @@ import { Component } from 'vue-property-decorator'
 import MathHeader from '@/components/math-header/math-header.vue'
 import ImgDisplay from '@/components/imgDisplay/imgDisplay.vue'
 import ArticleComp from '../../assets/js/articleComp'
+import $ from 'jquery'
 
 @Component({
     components: {
@@ -21,9 +22,7 @@ export default class ImgRecord extends Vue {
                 btnName: '返回'
             },
             imgDisplay: {
-                liImgs: [
-                    './static/image/beijing2.png', './static/image/beijing.png', './static/image/huaban.png'
-                ]
+                liImgs: []
             },
             articleHeight: 0
         }
@@ -49,9 +48,31 @@ export default class ImgRecord extends Vue {
         };
     }
 
+    // mui.plus
+    private muiPlusReady () {
+        let that = this;
+
+        mui.plusReady(function() {
+            that.readLocalImage();
+        });
+    }
+
+    // 读取本地图片
+    private readLocalImage (): void {
+        let that = this;
+        window['plus'].io.requestFileSystem(window['plus'].io.PRIVATE_DOC, function(fs) {
+            fs.root.createReader().readEntries(function(entris) {
+                for (let i = entris.length - 1; i >= 0; i--) {
+                    (that.$data.imgDisplay.liImgs as number[]).push(entris[i].fullPath);
+                }
+            });
+        });
+    }
+
     mounted () {
         this.setArticle();  // 设置article高度
         this.getArtHeig();  // 获取article高度
         this.winChange();
+        this.muiPlusReady();  // mui.plus
     }
 }

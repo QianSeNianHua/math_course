@@ -48,7 +48,7 @@
                                 </ul>
                             </div>
                             <input type="text" id="value" placeholder="请输入"/>
-                            <button class="right_tools_panel_Preservation">保存</button>
+                            <button id="saveDataBtn" class="right_tools_panel_Preservation">保存</button>
                         </div>
                     </div>
                 </article>

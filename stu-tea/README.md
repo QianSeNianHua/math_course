@@ -39,6 +39,25 @@ npm 报错 chromedriver@2.41.0 install: `node install.js`
 # 编写过程中的注意问题
 1、引入static目录(与src目录同级)下的文件，需要'./static/xxx'。
 2、开发环境时路由页面下的mode:'history'可以去掉地址的 # ；但是在生产环境时，必须为mode:'hash'，否则编译后页面空白。
+3、引入的库如果是模块化的(能通过npm安装的)，则通过import引入；如果不是，则参考mui的引入
+mui引入方式：https://www.jianshu.com/p/1484734b0fa4
+
+-------------mui引入步骤-------------
+A、在webpack.base.conf.js中plugins里加入
+new webpack.ProvidePlugin({
+    mui: 'mui',
+    'window.mui': 'mui'
+})
+
+B、在.babelrc里添加
+"presets": [],
+"ignore": ["./static/js/mui.js"]
+
+C、在.eslintignore里添加
+static/js/mui.js
+
+PS.B和C是为了typescript忽略mui.js文件的编译
+---------------------------------------
 
 # knowledge that update vue with webpack
 https://blog.csdn.net/qq_16559905/article/details/79404173

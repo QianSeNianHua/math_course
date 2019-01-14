@@ -184,13 +184,15 @@ export class TextBox {
             // 清除图形
             that.rePaint.clearCanvas();
             // 重绘图形
-            that.rePaint.rePaint();
-            // 画相交的点
-            that.intersect.repaintPoint();
-            // 文本框值为空
-            inputNode.value = '';
-            // 清空index
-            that.index = [];
+            setTimeout(() => {
+                that.rePaint.rePaint();
+                // 画相交的点
+                that.intersect.repaintPoint();
+                // 文本框值为空
+                inputNode.value = '';
+                // 清空index
+                that.index = [];
+            });
         }, false);
     }
 
