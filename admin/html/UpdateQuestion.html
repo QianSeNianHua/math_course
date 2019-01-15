@@ -5,11 +5,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link href="../css/authority/basic_layout.css" rel="stylesheet" type="text/css">
     <link href="../css/authority/common_style.css" rel="stylesheet" type="text/css">
-    <script type="text/javascript" src=1."../js/jquery/jquery-1.7.1.js"></script>
-    <script src=u"../js/update/custom.upload.js"></script>
-    <link rel="stylesheet" href=u"../js/update/custom.upload.css">
-    <script type="text/javascript" src=b"../js/Button_Jugement/CRDU_Button.js"></script>
-    <script type="text/javascript" src=trim_in"../js/Button_Jugement/Jugement_Trim_Input.js"></script>
+    <script type="text/javascript" src="../js/jquery/jquery-1.7.1.js"></script>
+    <script src="../js/update/custom.upload.js"></script>
+    <link rel="stylesheet" href="../js/update/custom.upload.css">
+    <script type="text/javascript" src="../js/Button_Jugement/CRDU_Button.js"></script>
+    <script type="text/javascript" src="../js/Button_Jugement/Jugement_Trim_Input.js"></script>
     <style>
     .duiqi{
 		float:left;
@@ -109,7 +109,11 @@
                     <tr id="Choicequestion">
                         <td>画板<br/><p style="color: darkred">(必填項)</p></td>
                         <td>
-                            <textarea id="q_board" name="q_board" style="margin-left:10px; resize: none" maxlength="256" class="textarea_custom" ></textarea>
+                            
+                            <button class="button button-royal button-box button-giant" id="OpenPaint">打开画板</button>
+                            <button class="button button-royal button-box button-giant" id="Refresh">刷新</button>
+                            <input type="text" class="tip" name="tip" maxlength="100" style="color: red; width: 100px;"></input>
+                            <textarea id="q_board" name="q_board" style="margin-left:10px; resize: none; display: none;" maxlength="256" class="textarea_custom" ></textarea>
                         </td>
                     </tr>
                     
@@ -125,11 +129,11 @@
             </div>
     </div>
 
-<script src=1."../js/jquery/jquery-1.8.3.min.js"></script>
+<script src="../js/jquery/jquery-1.8.3.min.js"></script>
 <script src="../js/jquery/jQuery.js" type="text/javascript" charset="utf-8"></script>
 <script src="../js/new_file.js" type="text/javascript" charset="utf-8"></script>
 <script src="../config/config.js" type="text/javascript" charset="utf-8"></script>
-
+<script src="../js/jquery/cookie.js"></script>
 <script>
     $(function(){
     	var UpdateQuestion = function(){
@@ -143,13 +147,14 @@
 			function showQuestion() {
 				var name=UrlParm.parm("name");
 				var phpid=UrlParm.parm("phpid");
+				
+				$(".tip").val('尚未添加画板！');
+				
 				if( phpid == undefined )
 				{
 					alert("请先登录！");
 					window.location.href = "adminLogin.html";
 				}
-				console.log(name);
-				console.log(phpid);
 		    	$.ajax({
 		    		type:"post",
 		    		url: 'http://' + urlConfig.host + ':' + urlConfig.post + urlConfig.com + "LookQuestion/lookquestion/",
@@ -164,6 +169,8 @@
 						$("#QuestionNo").val(obj.data[0].q_No);
 						$(".q_content").val(obj.data[0].q_content);
 						$("#q_board").val(obj.data[0].q_board);
+						
+						$.cookie('BoardText1', obj.data[0].q_board);
 					},
 					error : function(d) {
 		//				alert("失败");
@@ -175,8 +182,9 @@
 				var myDate = new Date();
 				var name=UrlParm.parm("name");
 				var phpid=UrlParm.parm("phpid");
-				console.log(name);
-				console.log(phpid);
+//				console.log(name);
+//				console.log(phpid);
+				
 				jQuery.support.cors = true;
 				$.ajax({
 					type:"post",
@@ -191,7 +199,7 @@
 					},
 					success: function(data) {
 						alert("修改成功！");
-						
+						$.cookie('UpdateDate', '', { expires: -1 });
 					},
 					error: function(xml, status, error) {
 						alert("修改失败！");
@@ -254,6 +262,26 @@
 		});
 		
 		$('#div1, #div2').on('click', '.col', updatequestion.outdata);
+		
+		$("#OpenPaint").on('click' , function() {
+			var RepaintData = $.cookie("RepaintData",$("#q_board").val());
+			window.open("UpdatePaint.html");
+		});
+		
+		$("#Refresh").on('click' , function() {
+			var UpdateDate = $.cookie('UpdateDate');
+			if(UpdateDate == undefined)
+			{
+				alert("尚未保存画板！");
+			}
+			else
+			{
+				$("#q_board").val(UpdateDate);
+				$(".tip").val('已添加画板！');
+				$(".tip").css("color","green");
+			}
+    		
+		});
     });
     
     

@@ -8,6 +8,8 @@
     <link rel="stylesheet" href=no"../css/lazyLoad/normalize.css">
     <link rel="stylesheet" href="../css/lazyLoad/style.css">
     <title>試題詳情</title>
+    <style type="text/css">
+    </style>
 </head>
 
 <body>
@@ -18,7 +20,6 @@
 <div id="container">
     <table class="table" cellspacing="0" cellpadding="0"  align="center" border="0" style="overflow:scroll;width: 96%;height: 700px;">
         <tr>
-            <td>
                 <div align="center"></div>
                 <div>
                     <div style="text-align:left;">&nbsp;&nbsp;试题内容：
@@ -26,13 +27,9 @@
                     </div>
                     <textarea name="textarea" class="textarea_custom"  style="resize: none; height:150px; " readonly ></textarea>
                 </div>
-            </td>
         </tr>
         <tr>
-            <td>
-                <canvas id="TabbedPanels1" class="TabbedPanels" style="height: 400px; width: 100%; background-color: white;" >
-                </canvas>
-            </td>
+                <button class="button button-royal button-box button-giant" id="OpenPaint">打开画板</button>
         </tr>
    
     </table>
@@ -43,13 +40,15 @@
 <script src="../js/jquery/jQuery.js" type="text/javascript" charset="utf-8"></script>
 <script src="../js/new_file.js" type="text/javascript" charset="utf-8"></script>
 <script src="../config/config.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/jquery/cookie.js"></script>
 <script type="text/javascript">
     $(function(){
     	var LookTestQuest = function(){
     		var result = {};
-    		
+    		var BoardText;
 			function showQuest(){
     			var result = {};
+    			var that = this;
     			var name=UrlParm.parm("name");
     			var phpid = UrlParm.parm("phpid");
 				if( phpid == undefined )
@@ -69,6 +68,7 @@
 		    		success: function(d) {
 		    			var obj = eval(d);
 						$(".textarea_custom").val(obj.data[0].q_content);
+						$.cookie('BoardText', obj.data[0].q_board);
 					},
 					error : function(d) {
 		//				alert("失败");
@@ -79,11 +79,18 @@
     		}
     		
     		result.showQuest = showQuest;
+    		result.BoardText = BoardText;
     		return result;
     	}
     	
     	var looktestQuest = new LookTestQuest();
     	looktestQuest.showQuest();
+    	
+    	$("#OpenPaint").on('click' , function() {
+			window.open("LookPaint.html");
+		});
+		
+		
     });
 </script>
 
