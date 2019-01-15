@@ -4,6 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link href="../css/authority/basic_layout.css" rel="stylesheet" type="text/css">
     <link href="../css/authority/common_style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
     <script type="text/javascript" src="../js/jquery/jQuery.js"></script>
     <script src="../js/update/custom.upload.js"></script>
     <link rel="stylesheet" href="../js/update/custom.upload.css">
@@ -32,7 +33,7 @@
                     <tr>
                         <td>試題內容<br/><span style="color: darkred">(必填項)</span></td>
                         <td>
-                        <img src="../images/common/arrowleft.png" style="width: 50px; height: 50px;cursor: pointer; padding-top:43px;" onclick="ArrowLeft()" class="duiqi" >
+                        <img src="../images/common/arrowleft.png" style="width: 50px; height: 100px;cursor: pointer; padding-top:43px;" class="duiqi" id="ArrowLeft" >
                         <div class="div_custom duiqi" id="div1">
                         	  <input type="button" value="+" class="col">
                               <input type="button" value="-" class="col">
@@ -101,21 +102,18 @@
                               <input type="button" value="³" class="col">
                               <input type="button" value="ⁿ" class="col">
                         </div>
-                        <img src="../images/common/arrowright.png" style="width: 50px; height: 50px;cursor: pointer; padding-top:43px; padding-left:10px;" onclick="ArrowRight()" class="duiqi" >
+                        <img src="../images/common/arrowright.png" style="width: 50px; height: 100px;cursor: pointer; padding-top:43px; padding-left:10px;" class="duiqi" id="ArrowRight">
                         <textarea class="q_content" name="q_content" rows="8" cols="75" style="margin-left:10px; resize: none " maxlength="1005" class="bigtextarea_custom" id="innn" ></textarea></td>
                     </tr>
                     
                     <tr id="Choicequestion">
                         <td>画板<br/><p style="color: darkred">(必填項)</p></td>
                         <td>
-                            <textarea id="q_board" name="q_board" style="margin-left:10px; resize: none" maxlength="256" class="textarea_custom" ></textarea>
+                            <button class="button button-royal button-box button-giant" id="OpenPaint">打开画板</button>
+                            <button class="button button-royal button-box button-giant" id="Refresh">刷新</button>
+                            <input type="text" class="tip" name="tip" maxlength="100" style="color: red; width: 100px;"></input>
+                            <input type="text" class="q_board" id="q_board" name="q_board" maxlength="1005" style="display: none;"></input>
                         </td>
-                    </tr>
-                    
-                    <tr>
-                        <td>試題解析<br/></td>
-                        <td>
-                            <textarea name="q_other" style="margin-left:10px; resize: none" maxlength="256" class="textarea_custom" ></textarea></td>
                     </tr>
                     
                         <tr>
@@ -132,23 +130,33 @@
 <script src="../js/jquery/jQuery.js"></script>
 <script src="../config/config.js" type="text/javascript" charset="utf-8"></script>
 <script src="../js/new_file.js" type="text/javascript" charset="utf-8"></script>
-
+<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+<script src="http://code.changer.hk/jquery/plugins/jquery.cookie.js"></script>
+<script src="../js/json2.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/json_parse.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/json_parse_state.js" type="text/javascript" charset="utf-8"></script>
 <script>
     $(function(){
     	var AddTestQuest = function(){
     		var result = {};
     		
     		function test(){
-    			var phpid=UrlParm.parm("phpid");
-				if( phpid == undefined )
-				{
-					alert("请先登录！");
-					window.location.href = "adminLogin.html";
-				}
+    			$(".tip").val('尚未添加画板！');
+    			
+//  			var phpid=UrlParm.parm("phpid");
+//				if( phpid == undefined )
+//				{
+//					alert("请先登录！");
+//					window.location.href = "adminLogin.html";
+//				}
     		}
     		
     		function addtest(){
+    			
     			var phpid = UrlParm.parm("phpid");
+    			
+    			$.cookie('canvasData', '', { expires: -1 });
+    			
     			if($(".textarea_custom").val() == "")
     			{
     				alert("请填写试题编号！");
@@ -176,6 +184,8 @@
 		    			"phpid" : phpid
 		    		},
 		    		success: function(data){
+		    			console.log(data);
+		    			
 		    			if(data.code==0){
 		    				alert(data.data);
 		    				location.reload();
@@ -187,6 +197,7 @@
 		    		},
 		    		error: function(xml, status, error) {
 		    			alert("添加失败！");
+		    			console.log(error);
 		    			location.reload();
 		    		}
     			});
@@ -238,6 +249,25 @@
 		
 		$('#ArrowRight').on('click', function() {
 			addTestQuest.ArrowRight();
+		});
+		
+		$("#OpenPaint").on('click' , function() {
+			window.open("paint.html");
+		});
+		
+		$("#Refresh").on('click' , function() {
+			var userData = $.cookie('canvasData');
+			if(userData == undefined)
+			{
+				alert("尚未保存画板！");
+			}
+			else
+			{
+				$(".q_board").val(userData);
+				$(".tip").val('已添加画板！');
+				$(".tip").css("color","green");
+			}
+    		
 		});
 		
 		$('#div1, #div2').on('click', '.col', addTestQuest.outdata);

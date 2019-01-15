@@ -68,16 +68,17 @@
 			function FirstPage() {
 				var result = {};
 				var that = this;
-				
 				//获取登陆后的cookie值
 				var phpid=UrlParm.parm("phpid");
+				
+//				$.cookie('BoardText', '', { expires: -1 });
+				
+				console.log(phpid);
 				if( phpid == undefined )
 				{
 					alert("请先登录！");
 					window.location.href = "adminLogin.html";
 				}
-//				console.log(phpid);
-				
 				$.ajax({
 					type: "post",
 					url: 'http://' + urlConfig.host + ':' + urlConfig.post + urlConfig.com + "ShowQuestion/showquestion/"+"&"+"t="+Math.random(),
