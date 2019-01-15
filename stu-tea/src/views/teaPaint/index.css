@@ -1,5 +1,5 @@
 article.content {
-    position: relative;
+    position: static;
     background-color: rgba(0, 151, 30, 0.2);
     width: 100%;
     padding: 24px 35px;
@@ -54,7 +54,7 @@ article.assistPanel {
 .top_tools_panel_left_tool {
     display: block;
     float: left;
-    width: 361px;
+    width: auto;
     height: 106px;
     line-height: 106px;
 }
@@ -147,7 +147,7 @@ article.toolPanel {
     margin-top: 10px;
     position: relative;
 }
-#interface_show {
+.tools_button>#interface_show {
     display: block;
     width: 20px;
     height: 20px;

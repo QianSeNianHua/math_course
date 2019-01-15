@@ -14,7 +14,7 @@ import ajax from '../../common/customAjax'
         MathHeader
     }
 })
-export default class TeaPaint extends Vue {
+export default class StuPaint extends Vue {
     private article: ArticleComp;
     private canvas: MyCanvas;
     private socket: Socket;
@@ -103,7 +103,7 @@ export default class TeaPaint extends Vue {
     winChange (): void {
         let that = this;
         window.onresize = function () {
-            that.setArticle();
+            // that.setArticle();
             that.getArtHeig();
             that.structure();
             that.infoMaskVetical();
@@ -170,7 +170,7 @@ export default class TeaPaint extends Vue {
     }
 
     // ajax获取试题数据
-    getQues (qid: number) {
+    getQues (qid: number): void {
         let postURL = 'http://' + config().host + ':' + config().post + '/' + config().project + '/' + config().api + '/' + Eapi.quesInfoOfQid
         let that = this;
 
@@ -191,7 +191,7 @@ export default class TeaPaint extends Vue {
         });
     }
 
-    // 保存画板内容
+    // 手机端：保存画板内容
     private saveData (): void {
         let image = new Image();
         let imageCont = (document.getElementById('myCanvas') as HTMLCanvasElement).toDataURL('image/png');
@@ -228,6 +228,28 @@ export default class TeaPaint extends Vue {
         });
     }
 
+    // PC端：上传图片
+    private uploadImage (): void {
+        let image = new Image();
+        let imageCont = (document.getElementById('myCanvas') as HTMLCanvasElement).toDataURL('image/png');
+
+        let chars = ['0','a','b','1','c','d','2','e','f','3','g','h','4','i','j','5','k','l','6','m','n','7','o','p','8','q','r','9','s','t','u','v','w','x','y','z'];
+        let res = '';
+        for (let i = 0; i < 10; i++) {
+            res += chars[Math.ceil(Math.random() * 35)];
+        }
+        let imgName = new Date().getTime() + res;
+
+        this.imgUpload({
+            'imgName': imgName,
+            'imgData': imageCont
+        }, function(data) {
+            alert('图片上传成功');
+        }, function(xml, status, err) {
+            alert('请检查网络是否连接');
+        });
+    }
+
     // 上传图片
     imgUpload (data: {}, succCall: Function, errCall: Function) {
         let postUrl = 'http://' + config().host + ':' + config().post + '/' + config().project + '/' + config().api + '/' + Eapi.paintsaveImage;
@@ -242,13 +264,22 @@ export default class TeaPaint extends Vue {
     muiPlusReady (): void {
         let that = this;
 
-        mui.plusReady(function() {
-            document.getElementById('saveDataBtn').addEventListener('click', function() {
-                that.saveData();
+        if (this.canvas.isMobile()) {
+            // 手机
+            mui.plusReady(function() {
+                document.getElementById('saveDataBtn').addEventListener('click', function() {
+                    that.saveData();
+                });
             });
-        });
 
-        mui.back = function () {};
+            mui.back = function () {};
+        } else {
+            // PC
+            document.getElementById('saveDataBtn').addEventListener('click', function() {
+                that.uploadImage();
+            });
+        }
+
     }
 
     mounted () {
