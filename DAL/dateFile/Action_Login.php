@@ -5,6 +5,8 @@ Date:2018-11-10
 Time:15:54
 Function:验证登录
 */
+header("content-type:text/html;charset=utf-8");
+header("Access-Control-Allow-Origin: *"); // 允许任意域名发起的跨域请求  
 require_once(realpath(dirname(__FILE__)."/../../")."/DAL/teacher.php");
 if(isset($_POST["ok"]))
 {
