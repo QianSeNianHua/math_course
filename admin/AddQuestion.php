@@ -6,6 +6,7 @@
  * Time: 17:16
  * Function:后台添加数据接口
  */
+header("Access-Control-Allow-Origin: *"); // 允许任意域名发起的跨域请求  
 require_once(realpath(dirname(__FILE__) . "/../") . "/common/connection.php");
 error_reporting(0);
 

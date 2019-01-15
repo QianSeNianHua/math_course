@@ -6,6 +6,7 @@
  * Time: 16:59
  * Function:前端查看数据
  */
+header("Access-Control-Allow-Origin: *"); // 允许任意域名发起的跨域请求  
 require_once(realpath(dirname(__FILE__) . "/../") . "/common/connection.php");
 error_reporting(0);
 

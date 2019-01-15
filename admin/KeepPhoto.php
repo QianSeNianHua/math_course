@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *"); // 允许任意域名发起的跨域请求  
 class KeepPhoto{
 	
 	//查看试题的画板
