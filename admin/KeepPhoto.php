@@ -1,7 +1,17 @@
 <?php
-header("Access-Control-Allow-Origin: *"); // 允许任意域名发起的跨域请求  
+header("Access-Control-Allow-Origin: *"); // 允许任意域名发起的跨域请求
+require_once(realpath(dirname(__FILE__) . "/../") . "/common/connection.php");
+error_reporting(0);
+  
 class KeepPhoto{
-	
+	private $conn;
+    /*
+    *  构造函数，建立数据库连接
+    */
+    public function __construct() {
+        $this->conn = new Connection();
+    }
+
 	//查看试题的画板
 	//接口参数
 	 //$_POST["q_id"];试卷id
@@ -35,14 +45,14 @@ class KeepPhoto{
 			$dir = $dir.time().".{$type}";
 			if (file_put_contents($dir, base64_decode(str_replace($result[1], '', $base64_image_content)))){
 				//echo '/'.$dir;
-				return '/'.$dir;
+				echo json_encode(array('result' => true));
 			}else{
 				//echo "失败";
-				return false;
+				echo json_encode(array('result' => false));
 			}
 		}else{
 			//echo "失败了";
-			return false;
+			echo json_encode(array('result' => false));
 		}
 	}
 }
