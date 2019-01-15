@@ -18,10 +18,12 @@ export default class StuPaint extends Vue {
     private article: ArticleComp;
     private canvas: MyCanvas;
     private socket: Socket;
+    private identity: EIdentity;
 
     constructor () {
         super();
-        this.socket = new Socket(EIdentity.student);
+        this.identity = EIdentity.student;
+        this.socket = new Socket(this.identity);
     }
 
     data () {
@@ -145,10 +147,15 @@ export default class StuPaint extends Vue {
         this.socket.message((data: string) => {
             let tempData: { status: boolean, qid: number } = JSON.parse(data);
 
-            that.pushControl(tempData.status, tempData.qid).then(qid => {
+            if (that.identity === 'teacher') {
                 // 发送ajax获取试题数据
-                that.getQues(qid);
-            }).catch(() => {});
+                that.getQues(tempData.qid);
+            } else if (that.identity === 'student') {
+                that.pushControl(tempData.status, tempData.qid).then(qid => {
+                    // 发送ajax获取试题数据
+                    that.getQues(qid);
+                }).catch(() => {});
+            }
         });
     }
 

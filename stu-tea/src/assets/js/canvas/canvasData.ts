@@ -51,4 +51,11 @@ export class CanvasData {
             return value;
         }
     }
+
+    /**
+     * 清空数据
+     */
+    recoverData (): void {
+        this.data = [];
+    }
 }

@@ -128,6 +128,9 @@ export default class MyCanvas {
      * @param data 图形数据，继承自Tools
      */
     initData (data: Tools[]): void {
+        // 清空数据
+        this.canvasData.recoverData();
+
         for (let item of data) {
             this.canvasData.setData(item);
         }
