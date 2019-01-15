@@ -27,8 +27,8 @@ class KeepPhoto{
 	//接口参数
 	//$_POST["board"];//画板的数据
 	public  function base64_image_content(){
-		 
-		 $base64_image_content=$_POST["board"];
+		 $imgName = $_POST['imgName'];
+		 $base64_image_content=$_POST['imgData'];
 		//echo  $base64_image_content;
 		//匹配出图片的格式
 		if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64_image_content, $result)){
@@ -42,7 +42,7 @@ class KeepPhoto{
 				//echo "创建成功";
 			}
 			
-			$dir = $dir.time().".{$type}";
+			$dir = $dir.$imgName.".{$type}";
 			if (file_put_contents($dir, base64_decode(str_replace($result[1], '', $base64_image_content)))){
 				//echo '/'.$dir;
 				echo json_encode(array('result' => true));
