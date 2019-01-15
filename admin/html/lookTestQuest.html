@@ -40,7 +40,7 @@
 <script src="../js/jquery/jQuery.js" type="text/javascript" charset="utf-8"></script>
 <script src="../js/new_file.js" type="text/javascript" charset="utf-8"></script>
 <script src="../config/config.js" type="text/javascript" charset="utf-8"></script>
-<script src="http://code.changer.hk/jquery/plugins/jquery.cookie.js"></script>
+<script src="../js/jquery/cookie.js"></script>
 <script type="text/javascript">
     $(function(){
     	var LookTestQuest = function(){
@@ -68,8 +68,6 @@
 		    		success: function(d) {
 		    			var obj = eval(d);
 						$(".textarea_custom").val(obj.data[0].q_content);
-//						that.BoardText = obj.data[0].q_board;
-//						var BoardText = obj.data[0].q_board;
 						$.cookie('BoardText', obj.data[0].q_board);
 					},
 					error : function(d) {

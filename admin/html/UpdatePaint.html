@@ -114,20 +114,28 @@
 	<script src="../js/jquery/jQuery.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/new_file.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
-	<script src="http://code.changer.hk/jquery/plugins/jquery.cookie.js"></script>
+	<script src="../js/jquery/cookie.js"></script>
 	<script src="../js/json2.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/json_parse.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/json_parse_state.js" type="text/javascript" charset="utf-8"></script>
 	<script>
 		$(function() {
 			var BoardData1 = $.cookie('BoardText1');
-
+			var ReData = $.cookie('RepaintData');
+			console.log(ReData);
 			var canvas = new MyCanvas();
 			canvas.startListen();
 			canvas.moveListen();
 			canvas.endListen();
 			canvas.clickListen();
-			canvas.initData(JSON.parse(BoardData1));
+			if (ReData == "") {
+				console.log();
+			}else if (ReData == BoardData1){
+				canvas.initData(JSON.parse(BoardData1));
+			}else{
+				canvas.initData(JSON.parse(ReData));
+			}
+			
 			
 			$(".right_tools_panel_Preservation").on('click' , function() {
 				if(confirm('确认保存？'))

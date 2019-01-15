@@ -102,7 +102,7 @@
                               <input type="button" value="³" class="col">
                               <input type="button" value="ⁿ" class="col">
                         </div>
-                        <img src="../images/common/arrowright.png" style="width: 50px; height: 100px;cursor: pointer; padding-top:43px; padding-left:10px;" class="duiqi" id="ArrowRight">
+                        <img src="../images/common/arrowright.png" style="width: 60px; height: 100px;cursor: pointer; padding-top:43px; padding-left:10px;" class="duiqi" id="ArrowRight">
                         <textarea class="q_content" name="q_content" rows="8" cols="75" style="margin-left:10px; resize: none " maxlength="1005" class="bigtextarea_custom" id="innn" ></textarea></td>
                     </tr>
                     
@@ -131,7 +131,7 @@
 <script src="../config/config.js" type="text/javascript" charset="utf-8"></script>
 <script src="../js/new_file.js" type="text/javascript" charset="utf-8"></script>
 <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
-<script src="http://code.changer.hk/jquery/plugins/jquery.cookie.js"></script>
+<script src="../js/jquery/cookie.js"></script>
 <script src="../js/json2.js" type="text/javascript" charset="utf-8"></script>
 <script src="../js/json_parse.js" type="text/javascript" charset="utf-8"></script>
 <script src="../js/json_parse_state.js" type="text/javascript" charset="utf-8"></script>
@@ -252,6 +252,9 @@
 		});
 		
 		$("#OpenPaint").on('click' , function() {
+			console.log($("#q_board").val());
+			var data = $("#q_board").val();
+			$.cookie("RepaintData", data);  
 			window.open("paint.html");
 		});
 		
@@ -267,7 +270,6 @@
 				$(".tip").val('已添加画板！');
 				$(".tip").css("color","green");
 			}
-    		
 		});
 		
 		$('#div1, #div2').on('click', '.col', addTestQuest.outdata);

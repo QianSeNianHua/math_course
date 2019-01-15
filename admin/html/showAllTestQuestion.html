@@ -63,17 +63,12 @@
 			var ListNum = 0 ; //用于获得数据行数
 			var TotalNum ;
 			
-//				console.log(name)
-			
 			function FirstPage() {
 				var result = {};
 				var that = this;
 				//获取登陆后的cookie值
 				var phpid=UrlParm.parm("phpid");
 				
-//				$.cookie('BoardText', '', { expires: -1 });
-				
-				console.log(phpid);
 				if( phpid == undefined )
 				{
 					alert("请先登录！");

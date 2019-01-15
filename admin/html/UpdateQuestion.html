@@ -133,7 +133,7 @@
 <script src="../js/jquery/jQuery.js" type="text/javascript" charset="utf-8"></script>
 <script src="../js/new_file.js" type="text/javascript" charset="utf-8"></script>
 <script src="../config/config.js" type="text/javascript" charset="utf-8"></script>
-<script src="http://code.changer.hk/jquery/plugins/jquery.cookie.js"></script>
+<script src="../js/jquery/cookie.js"></script>
 <script>
     $(function(){
     	var UpdateQuestion = function(){
@@ -155,8 +155,6 @@
 					alert("请先登录！");
 					window.location.href = "adminLogin.html";
 				}
-				console.log(name);
-				console.log(phpid);
 		    	$.ajax({
 		    		type:"post",
 		    		url: 'http://' + urlConfig.host + ':' + urlConfig.post + urlConfig.com + "LookQuestion/lookquestion/",
@@ -266,6 +264,7 @@
 		$('#div1, #div2').on('click', '.col', updatequestion.outdata);
 		
 		$("#OpenPaint").on('click' , function() {
+			var RepaintData = $.cookie("RepaintData",$("#q_board").val());
 			window.open("UpdatePaint.html");
 		});
 		

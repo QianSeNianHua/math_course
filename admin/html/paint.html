@@ -9,7 +9,7 @@
 
 	<body>
 		<div class="box_head">
-			<a class="box_head_location" href="index.html"><button class="box_head_back" style="display: none;">返回</button></a>
+			<a class="box_head_location" href="index.html"><button class="box_head_back">返回</button></a>
 			<h1 class="box_head_title">畫板</h1>
 		</div>
 
@@ -114,22 +114,32 @@
 	<script src="../js/jquery/jQuery.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/new_file.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
-	<script src="http://code.changer.hk/jquery/plugins/jquery.cookie.js"></script>
+	<script src="../js/jquery/cookie.js"></script>
 	<script src="../js/json2.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/json_parse.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/json_parse_state.js" type="text/javascript" charset="utf-8"></script>
+	
 	<script>
+		var data = $.cookie('RepaintData');
+		
 		var canvas = new MyCanvas();
+		console.log(data);
 		canvas.startListen();
 		canvas.moveListen();
 		canvas.endListen();
 		canvas.clickListen();
-
+		if (data == "") 
+		{
+			console.log();
+		}
+		else
+		{
+			canvas.initData(JSON.parse(data));
+		}
 		$(".right_tools_panel_Preservation").on('click' , function() {
 			if(confirm('确认保存？'))
 			{
 				var myJsonString = JSON.stringify(canvas.getData());
-//				$.cookie('canvasData', myJsonString);
 				var date = new Date(); 
 				date.setTime(date.getTime() + (60 * 60 * 1000));
 				$.cookie("canvasData", myJsonString,{expires:date});  
@@ -143,4 +153,5 @@
 			}
 		});
 	</script>
+	
 </html>
