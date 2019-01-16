@@ -53,6 +53,7 @@
 <script src="../js/jquery/jQuery.js" type="text/javascript" charset="utf-8"></script>
 <script src="../js/new_file.js" type="text/javascript" charset="utf-8"></script>
 <script src="../config/config.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/jquery/cookie.js" type="text/javascript" charset="utf-8"></script>
 
 <script type="text/javascript">
 	$(function() {
@@ -68,6 +69,10 @@
 				var that = this;
 				//获取登陆后的cookie值
 				var phpid=UrlParm.parm("phpid");
+				$.cookie('canvasData', '', { expires: -1 });
+				$.cookie('RepaintData', '', { expires: -1 });
+				$.cookie('BoardText', '', { expires: -1 });
+				$.cookie('BoardText1', '', { expires: -1 });
 				
 				if( phpid == undefined )
 				{

@@ -90,7 +90,7 @@
 	<script>
 		window.onload = function() {
 			document.getElementById('myCanvas').width = '798';
-			document.getElementById('myCanvas').height = '512';
+			document.getElementById('myCanvas').height = '536';
 //			修改
 
 			var boxHeight = document.body.clientHeight - document.getElementsByClassName('box_head')[0].clientHeight;
@@ -112,46 +112,48 @@
     </script>
 	<script src="../js/main.bundle.js"></script>
 	<script src="../js/jquery/jQuery.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(function() {
+			var canvas = new MyCanvas();
+			setTimeout(function() {
+				var data = $.cookie('RepaintData');
+		
+				canvas.startListen();
+				canvas.moveListen();
+				canvas.endListen();
+				canvas.clickListen();
+				if (data == "") 
+				{
+				}
+				else
+				{
+					canvas.initData(JSON.parse(data));
+				}
+			}, 100);
+			
+			$(".right_tools_panel_Preservation").on('click' , function() {
+				if(confirm('确认保存？'))
+				{
+					var myJsonString = JSON.stringify(canvas.getData());
+					var date = new Date(); 
+					date.setTime(date.getTime() + (60 * 60 * 1000));
+					$.cookie("canvasData", myJsonString,{expires:date});  
+					window.opener=null;
+					window.open('','_self');
+					window.close();
+				}
+				else
+				{
+					return ;
+				}
+			});
+		});
+	</script>
 	<script src="../js/new_file.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
 	<script src="../js/jquery/cookie.js"></script>
 	<script src="../js/json2.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/json_parse.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/json_parse_state.js" type="text/javascript" charset="utf-8"></script>
-	
-	<script>
-		var data = $.cookie('RepaintData');
-		
-		var canvas = new MyCanvas();
-		console.log(data);
-		canvas.startListen();
-		canvas.moveListen();
-		canvas.endListen();
-		canvas.clickListen();
-		if (data == "") 
-		{
-			console.log();
-		}
-		else
-		{
-			canvas.initData(JSON.parse(data));
-		}
-		$(".right_tools_panel_Preservation").on('click' , function() {
-			if(confirm('确认保存？'))
-			{
-				var myJsonString = JSON.stringify(canvas.getData());
-				var date = new Date(); 
-				date.setTime(date.getTime() + (60 * 60 * 1000));
-				$.cookie("canvasData", myJsonString,{expires:date});  
-				window.opener=null;
-				window.open('','_self');
-				window.close();
-			}
-			else
-			{
-				return ;
-			}
-		});
-	</script>
 	
 </html>
