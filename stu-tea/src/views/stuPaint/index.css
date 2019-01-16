@@ -139,7 +139,7 @@ article.toolPanel {
     overflow-y: scroll;
 }
 .toolContent {
-    width: 145px;
+    width: 162px;
     overflow-x: hidden;
 }
 .tools_button {
@@ -199,6 +199,8 @@ article.toolPanel {
     font-size: 20px;
     text-align: center;
     font-weight: 400px;
+    float: left;
+    padding: 0;
 }
 .toolContent>input:active {
     outline: none;

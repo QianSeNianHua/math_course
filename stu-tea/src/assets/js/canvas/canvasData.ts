@@ -56,6 +56,6 @@ export class CanvasData {
      * 清空数据
      */
     recoverData (): void {
-        this.data = [];
+        this.data.splice(0, this.data.length);
     }
 }

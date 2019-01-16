@@ -191,6 +191,7 @@ export default class StuPaint extends Vue {
                 } catch (error) {
                     board = [];
                 }
+                that.paint();
                 that.canvas.initData(board);
             }
         }).catch((mess) => {
@@ -290,7 +291,6 @@ export default class StuPaint extends Vue {
     }
 
     mounted () {
-        this.messageQid();  // 接收socket发送的消息
         this.setArticle();  // 设置article高度
         this.getArtHeig();  // 获取article高度
         this.structure();  // 设置结构
@@ -298,6 +298,7 @@ export default class StuPaint extends Vue {
         this.setPaintAttr(); // 设置画板的宽度和高度
         this.winChange();
         this.paint();  // 画板
+        this.messageQid();  // 接收socket发送的消息
         this.muiPlusReady();  // mui
     }
 }

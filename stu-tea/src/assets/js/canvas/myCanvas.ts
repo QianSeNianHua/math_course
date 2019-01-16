@@ -130,6 +130,8 @@ export default class MyCanvas {
     initData (data: Tools[]): void {
         // 清空数据
         this.canvasData.recoverData();
+        // 清除canvasChoosed的下标
+        this.canvasChoosed.recoverIndex();
 
         for (let item of data) {
             this.canvasData.setData(item);
