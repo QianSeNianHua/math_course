@@ -1,16 +1,23 @@
 <?php
 //退出登录
 header("Access-Control-Allow-Origin: *"); // 允许任意域名发起的跨域请求  
-function logout(){
-	header("content-type:text/html;charset=utf-8");
-    if(!empty($_COOKIE["username"])){
-		setcookie("username",'null',time()-3600,'/');
-		echo "<script>alert('退出成功')</script>";
-		header("location:html/adminLogin.html");
-	}else{
-		echo "<script>alert('退出失败')</script>";
-		header("location:html/index1.html");
+require_once(realpath(dirname(__FILE__) . "/../") . "/common/connection.php");
+error_reporting(0);
+class Logout{
+	private $conn;
+    /*
+    *  构造函数，建立数据库连接
+    */
+    public function __construct() {
+        $this->conn = new Connection();
+    }
+	public function logout(){
+	    if(!empty($_COOKIE["username"])){
+			setcookie("username",'null',time()-3600,'/');
+			echo  json_encode(array('status'=>true));//返回json格式数据
+		}else{
+			echo  json_encode(array('status'=>false));//返回json格式数据
 		}
+	}
 }
-echo logout();
- ?>
+?>

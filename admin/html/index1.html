@@ -34,7 +34,7 @@
 					<span id="day_day"></span>
 				</div>
 				<div id="top_close">
-					<a href="javascript:void(0);" onclick="logout();" target="_parent">
+					<a href="javascript:void(0);" target="_parent">
 						<img alt="退出系統" title="退出系统" src="../images/common/close.jpg">
 					</a>
 				</div>
@@ -72,6 +72,7 @@
 		</div>
 		
 		<script src="../js/jquery/cookie.js"></script>
+		<script src="../config/config.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
 			//获取cookie
 			function getCookie(cookieName) {
@@ -91,12 +92,30 @@
 		</script>
 		<script type="text/javascript">
 			/**退出系统**/
-			function logout() {
-				
+			$("#top_close").on('click' , function() {
 				if(confirm("您确定要退出本系统吗？")) {
-					window.location.href = "../logout.php";
+					$.ajax({
+						type: "post",
+						url: 'http://' + urlConfig.host + ':' + urlConfig.post + urlConfig.com + "Logout/logout/"+"&"+"t="+Math.random(),
+						async:false,//改异步显示数据
+						dataType:'json',
+						success: function(d) {
+							if (d.status == true)
+							{
+								document.location='adminLogin.html';
+							}
+							else
+							{
+								alert("退出失败");
+							}
+						},
+						error: function(d) {
+							alert("读取失败");
+							
+						}
+					});
 				}
-			}
+			});
 		</script>
 
 		<script type="text/javascript">
@@ -104,10 +123,11 @@
 			function getDate01() {
 				//获取页面cookie
 				var skey = getCookie("username");
+				
 				if(skey != "") {
 					$('#top_op').append(skey);
 				} else {
-					//alert(skey);
+//					alert(skey);
 					alert("请先登录！");
 					window.location.href = "adminLogin.html";
 				}
