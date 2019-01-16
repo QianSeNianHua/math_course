@@ -25,11 +25,6 @@
             	 <img src="../images/common/left.jpg" style="width: 50px; height: 15px;cursor: pointer; margin-left:92%; margin-top: 10px;" onclick="javascript :history.back(-1);">
                 <table class="custom_addQues_content" style="height: 700px;">
                     <tr>
-                        <td>试题编号<br/><span style="color: darkred">(必填項)</span></td>
-                        <td>
-                            <textarea id="QuestionNo" name="q_No" rows="8" cols="75" style="margin-left:10px; width:50%; resize: none " maxlength="1005" class="textarea_custom"></textarea></td>
-                    </tr>
-                    <tr>
                         <td>試題內容<br/><span style="color: darkred">(必填項)</span></td>
                         <td>
                         <img src="../images/common/arrowleft.png" style="width: 50px; height: 50px;cursor: pointer; padding-top:43px;" class="duiqi" id="ArrowLeft" >
@@ -166,7 +161,7 @@
 					},
 		    		success: function(d) {
 		    			var obj = eval(d);
-						$("#QuestionNo").val(obj.data[0].q_No);
+		    			console.log(obj);
 						$(".q_content").val(obj.data[0].q_content);
 						$("#q_board").val(obj.data[0].q_board);
 						
