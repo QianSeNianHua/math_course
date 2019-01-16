@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/lazyLoad/style.css">
     <title>試題詳情</title>
     <style type="text/css">
+    	
     </style>
 </head>
 
@@ -18,6 +19,7 @@
   <input type="hidden" name="fangyuanEntity.fyXqName" value="" id="fyXqName"/>
 </p>
 <div id="container">
+	
     <table class="table" cellspacing="0" cellpadding="0"  align="center" border="0" style="overflow:scroll;width: 96%;height: 700px;">
         <tr>
                 <div align="center"></div>
@@ -51,6 +53,10 @@
     			var that = this;
     			var name=UrlParm.parm("name");
     			var phpid = UrlParm.parm("phpid");
+    			
+    			$.cookie('BoardText', '', { expires: -1 });
+//  			$.cookie('BoardText', '', { expires: -1 });
+    			
 				if( phpid == undefined )
 				{
 					alert("请先登录！");

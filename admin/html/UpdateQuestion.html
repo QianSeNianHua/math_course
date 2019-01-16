@@ -14,6 +14,10 @@
     .duiqi{
 		float:left;
 	}
+	a:hover
+	{
+		text-decoration: none;
+	}
     </style>
 </head>
 <body>
@@ -107,7 +111,7 @@
                             
                             <button class="button button-royal button-box button-giant" id="OpenPaint">打开画板</button>
                             <button class="button button-royal button-box button-giant" id="Refresh">刷新</button>
-                            <input type="text" class="tip" name="tip" maxlength="100" style="color: red; width: 100px;"></input>
+                            <a class="tip" style="color: red; width: 100px;"></a>
                             <textarea id="q_board" name="q_board" style="margin-left:10px; resize: none; display: none;" maxlength="256" class="textarea_custom" ></textarea>
                         </td>
                     </tr>
@@ -143,7 +147,7 @@
 				var name=UrlParm.parm("name");
 				var phpid=UrlParm.parm("phpid");
 				
-				$(".tip").val('尚未添加画板！');
+				$(".tip").text('尚未添加画板！');
 				
 				if( phpid == undefined )
 				{
@@ -177,8 +181,6 @@
 				var myDate = new Date();
 				var name=UrlParm.parm("name");
 				var phpid=UrlParm.parm("phpid");
-//				console.log(name);
-//				console.log(phpid);
 				
 				jQuery.support.cors = true;
 				$.ajax({
@@ -272,7 +274,7 @@
 			else
 			{
 				$("#q_board").val(UpdateDate);
-				$(".tip").val('已添加画板！');
+				$(".tip").text('已添加画板！');
 				$(".tip").css("color","green");
 			}
     		
