@@ -19,7 +19,7 @@ export default class QuesRecord extends Vue {
         return {
             mathHeader: {
                 btnFlag: true,
-                headerName: '试题列表',
+                headerName: '試題列表',
                 btnName: '返回'
             },
             date: Array(0),

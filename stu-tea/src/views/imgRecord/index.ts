@@ -18,7 +18,7 @@ export default class ImgRecord extends Vue {
         return {
             mathHeader: {
                 btnFlag: true,
-                headerName: '查看记录',
+                headerName: '查看記錄',
                 btnName: '返回'
             },
             imgDisplay: {

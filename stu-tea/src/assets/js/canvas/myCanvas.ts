@@ -131,13 +131,14 @@ export default class MyCanvas {
         // 清空数据
         this.canvasData.recoverData();
         // 清除canvasChoosed的下标
+        this.canvasChoosed.cancleSelected();
         this.canvasChoosed.recoverIndex();
 
         for (let item of data) {
             this.canvasData.setData(item);
         }
 
-        // 清楚画布并重绘图形
+        // 清除画布并重绘图形
         this.rePaint.clearCanvas();
         this.rePaint.rePaint();
 

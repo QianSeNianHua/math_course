@@ -44,11 +44,11 @@
                                     <li><button id="radius" class="nochoosed">半徑</button></li>
                                     <li><button id="diameter" class="nochoosed">直徑</button></li>
                                     <li><button id="chord" class="nochoosed">弦</button></li>
-                                    <!-- <li><button id="tangent" class="nochoosed">切线</button></li> -->
+                                    <li><button id="tangent" class="nochoosed">切线</button></li>
                                 </ul>
                             </div>
                             <input type="text" id="value" placeholder="请输入"/>
-                            <button class="right_tools_panel_Preservation">保存</button>
+                            <button id="saveDataBtn" class="right_tools_panel_Preservation">保存</button>
                         </div>
                     </div>
                 </article>
@@ -76,4 +76,5 @@
 </template>
 
 <style scoped src="./index.css"></style>
+<script src="../../assets/js/mui.min.js"></script>
 <script lang="ts" src="./index.ts"></script>

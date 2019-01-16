@@ -15,7 +15,7 @@ export default new Router({
     routes: [
         {
             name: 'StuIndex',
-            path: '/',
+            path: '/StuIndex',
             component: StuIndex,
             meta: false
         },
@@ -33,7 +33,7 @@ export default new Router({
         },
         {
             name: 'TeaIndex',
-            path: '/TeaIndex',
+            path: '/',
             component: TeaIndex,
             meta: false
         },

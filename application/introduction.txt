@@ -1,0 +1,7 @@
+發佈版：
+學生端：paintStu.apk
+教師端：paintTea.apk
+
+測試版：
+學生端：paintStuTest.apk
+教師端：paintTeaTest.apk

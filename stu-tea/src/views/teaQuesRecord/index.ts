@@ -19,7 +19,7 @@ export default class TeaQuesRecord extends Vue {
         return {
             mathHeader: {
                 btnFlag: true,
-                headerName: '试题列表',
+                headerName: '試題列表',
                 btnName: '返回'
             },
             date: Array(0),
@@ -132,7 +132,7 @@ export default class TeaQuesRecord extends Vue {
             },
             complete: (xml, status) => {
                 if (status === 'timeout' || status === 'error') {
-                    console.log('网络连接失败');
+                    // console.log('网络连接失败');
                 }
             }
         });

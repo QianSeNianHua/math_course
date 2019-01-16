@@ -374,7 +374,7 @@ export class Intersect {
      * 删除相交的点
      */
     delData(): void {
-
+        this.pointData.splice(0, this.pointData.length);
     }
 
     /**

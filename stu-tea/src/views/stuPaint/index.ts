@@ -30,7 +30,7 @@ export default class StuPaint extends Vue {
         return {
             mathHeader: {
                 btnFlag: true,
-                headerName: '画板',
+                headerName: '畫板',
                 btnName: '返回'
             },
             articleHeight: 0,
@@ -128,7 +128,8 @@ export default class StuPaint extends Vue {
     setPaintAttr (): void {
         let width = $('article.canvasPanel').width();
         let height = $('article.canvasPanel').height();
-        $('#myCanvas').attr({ width, height });
+        // $('#myCanvas').attr({ width, height });  // 自動
+        $('#myCanvas').attr({ width: 798, height: 536 });  // 手動
     }
 
     // 画板
@@ -191,7 +192,6 @@ export default class StuPaint extends Vue {
                 } catch (error) {
                     board = [];
                 }
-                that.paint();
                 that.canvas.initData(board);
             }
         }).catch((mess) => {
@@ -219,12 +219,12 @@ export default class StuPaint extends Vue {
                 format: 'png',
                 quality: 100
             }, function(i) {
-                mui.alert('图片保存成功');
+                mui.alert('保存圖片成功');
             }, function(e) {
-                mui.alert('保存图片失败');
+                mui.alert('保存圖片失敗');
             });
         }, function(e) {
-            mui.alert('加载图片失败');
+            mui.alert('加載圖片失敗');
         });
 
         this.imgUpload({
@@ -232,7 +232,7 @@ export default class StuPaint extends Vue {
             'imgData': imageCont
         }, function(data) {
         }, function(xml, status, err) {
-            mui.alert('请检查网络是否连接');
+            mui.alert('請檢查網絡是否連接');
         });
     }
 
@@ -252,9 +252,9 @@ export default class StuPaint extends Vue {
             'imgName': imgName,
             'imgData': imageCont
         }, function(data) {
-            alert('图片上传成功');
+            alert('圖片上傳成功');
         }, function(xml, status, err) {
-            alert('请检查网络是否连接');
+            alert('請檢查網絡是否連接');
         });
     }
 

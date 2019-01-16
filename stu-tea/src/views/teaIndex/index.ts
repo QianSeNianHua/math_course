@@ -18,18 +18,18 @@ export default class TeaIndex extends Vue {
         return {
             btnFlag: false,
             btnName: '返回',
-            headerName: '首页',
+            headerName: '首頁',
             articleHeight: 0,
             liImgs: [
                 {
                     click: this.goPaint,
                     src: require('../../../static/image/huaban.png'),
-                    text: '新建画板'
+                    text: '新建畫板'
                 },
                 {
                     click: this.TQuesRecord,
                     src: require('../../../static/image/liebiao.png'),
-                    text: '试题列表'
+                    text: '試題列表'
                 },
                 {
                     click: this.goImgRecord,

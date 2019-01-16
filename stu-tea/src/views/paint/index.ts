@@ -18,7 +18,7 @@ export default class Paint extends Vue {
         return {
             mathHeader: {
                 btnFlag: true,
-                headerName: '画板',
+                headerName: '畫板',
                 btnName: '返回'
             },
             articleHeight: 0,
