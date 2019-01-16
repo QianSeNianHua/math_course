@@ -26,11 +26,6 @@
             <div id="box_border">
                 <table class="custom_addQues_content" style="height: 700px;">
                     <tr>
-                        <td>试题编号<br/><span style="color: darkred">(必填項)</span></td>
-                        <td>
-                            <textarea id="q_No" name="q_No" rows="8" cols="75" style="margin-left:10px; width:50%; resize: none " maxlength="1005" class="textarea_custom"></textarea></td>
-                    </tr>
-                    <tr>
                         <td>試題內容<br/><span style="color: darkred">(必填項)</span></td>
                         <td>
                         <img src="../images/common/arrowleft.png" style="width: 50px; height: 100px;cursor: pointer; padding-top:43px;" class="duiqi" id="ArrowLeft" >
@@ -155,7 +150,7 @@
     			
     			var phpid = UrlParm.parm("phpid");
     			
-    			$.cookie('canvasData', '', { expires: -1 });
+    			
     			
     			if($(".textarea_custom").val() == "")
     			{
@@ -178,19 +173,17 @@
 		    		dataType:'json',
 		    		data:{
 		    			"ok": "ok",
-		    			"q_No": $("#q_No").val(),
 		    			"q_content": $(".q_content").val(),
 		    			"board": $("#q_board").val(),
 		    			"phpid" : phpid
 		    		},
 		    		success: function(data){
-		    			console.log(data);
-		    			
 		    			if(data.code==0){
 		    				alert(data.data);
 		    				location.reload();
 		    			}else if(data.code==200){
 		    				alert("添加成功！");
+		    				$.cookie('canvasData', '', { expires: -1 });
 		    				location.reload();
 		    			}
 		    			
