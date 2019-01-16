@@ -26,11 +26,11 @@ class Login{
 		$t_No=trim($_POST["t_No"]);//老师账号
 		$t_password=trim($_POST["t_password"]);//老师密码
 		
-		$sql="select * from teacher where t_No='$t_No' and t_password='$t_password'";
+		$sql="select * from teacher where t_No=$t_No and t_password=$t_password";
 		$result=$this->conn->selectBySql($sql);
-		if(count($result)>0){
-			$t_id=$data["data"]["0"]["t_id"];
-			$t_name=$data["data"]["0"]["t_name"];
+		if(count($result['data'])>0){
+			$t_id=$result["data"]["0"]["t_id"];
+			$t_name=$result["data"]["0"]["t_name"];
 			$_SESSION["t_id"]=$t_id;//将教师ID存入SESSION中
 			$_SESSION["t_name"]=$t_name;//将教师姓名存入SESSION中
 			
@@ -41,9 +41,9 @@ class Login{
 			$_SESSION["overtime"]=$time;
 			setcookie("username",$username,$time,'/');
 			
-			$this->conn->json(array('status'=>true));//返回json格式数据
+			echo  json_encode(array('status'=>true));//返回json格式数据
 		}else{
-			$this->conn->json(array('status'=>false));//返回json格式数据
+			echo  json_encode(array('status'=>false));//返回json格式数据
 		}
 		
 	 }
